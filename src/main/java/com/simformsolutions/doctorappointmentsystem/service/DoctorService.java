@@ -59,13 +59,5 @@ public class DoctorService {
 //
 //    //DELETE
 //    String deleteDoctor(int doctorId);
-    public Map<String, String> validationHandler(MethodArgumentNotValidException ex){
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
-
-        return errors;
-
-    }
 
 }

@@ -24,9 +24,4 @@ public class DoctorController {
         return doctorService.addDoctor(d);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        return doctorService.validationHandler(ex);
-    }
 }

@@ -60,5 +60,13 @@ public class Doctor {
     @OneToMany(targetEntity = Appointment.class,cascade = CascadeType.ALL)
     @JoinColumn(name = "doctorId",referencedColumnName = "doctorId")
     private List<Appointment> appointments;
-
+    @JsonIgnore
+    public Appointment setAppointments(Appointment appointment) {
+        appointments.add(appointment);
+        return appointment;
+    }
+    @JsonIgnore
+    public Appointment getLastAppointment() {
+        return appointments.get(appointments.size()-1);
+    }
 }
