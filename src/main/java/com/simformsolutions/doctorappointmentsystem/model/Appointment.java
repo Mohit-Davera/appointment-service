@@ -35,7 +35,6 @@ public class Appointment {
     @NotEmpty(message = "Enter Speciality ")
     private String speciality;
 
-
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime time;
 
@@ -52,8 +51,5 @@ public class Appointment {
 
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
-
-
-
-
+    
 }

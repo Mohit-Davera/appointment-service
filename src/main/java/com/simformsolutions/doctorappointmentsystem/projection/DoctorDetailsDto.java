@@ -1,4 +1,4 @@
-package com.simformsolutions.doctorappointmentsystem.Projection;
+package com.simformsolutions.doctorappointmentsystem.projection;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

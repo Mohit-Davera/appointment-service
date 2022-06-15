@@ -1,5 +1,7 @@
 package com.simformsolutions.doctorappointmentsystem.handler;
 
+import com.simformsolutions.doctorappointmentsystem.NoDoctorAvailableExcepetion;
+import com.simformsolutions.doctorappointmentsystem.controller.Responder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     public ResponseEntity<Object> exception(DataIntegrityViolationException exception) {
         return new ResponseEntity<>("Email Already Exists", HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = NoDoctorAvailableExcepetion.class)
+    public ResponseEntity<Object> NoDoctorException(NoDoctorAvailableExcepetion ex){
+        return  new ResponseEntity<>("No Doctor Available For This Date",HttpStatus.BAD_REQUEST);
     }
 
 

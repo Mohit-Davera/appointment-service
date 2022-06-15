@@ -35,6 +35,11 @@ public class Doctor {
     @Size(min = 10,max = 10,message = "Enter 10 Digit Number")
     private String phoneNumber;
 
+    @Column(unique = true)
+    @Email
+    @NotEmpty(message = "Please Enter Email")
+    private String email;
+
     @NotEmpty(message = "Please Enter City")
     private String city;
 
