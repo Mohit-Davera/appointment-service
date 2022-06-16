@@ -6,20 +6,22 @@ import com.simformsolutions.doctorappointmentsystem.repository.DoctorRepository;
 import com.simformsolutions.doctorappointmentsystem.repository.SpecialityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class DoctorService {
 
     @Autowired
-    private DoctorRepository doctorRepository;
+    private final DoctorRepository doctorRepository;
 
     @Autowired
-    private SpecialityRepository specialityRepository;
+    private final SpecialityRepository specialityRepository;
+
+    public DoctorService(DoctorRepository doctorRepository, SpecialityRepository specialityRepository) {
+        this.doctorRepository = doctorRepository;
+        this.specialityRepository = specialityRepository;
+    }
 
     //GET
     public List<Doctor> getAllDoctors(){

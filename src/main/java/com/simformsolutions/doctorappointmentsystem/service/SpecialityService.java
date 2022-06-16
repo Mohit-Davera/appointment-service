@@ -12,7 +12,11 @@ import java.util.stream.Collectors;
 public class SpecialityService {
 
     @Autowired
-    private SpecialityRepository specialityRepository;
+    private final SpecialityRepository specialityRepository;
+
+    public SpecialityService(SpecialityRepository specialityRepository) {
+        this.specialityRepository = specialityRepository;
+    }
 
     public List<Speciality> showSpecialities(){
         return specialityRepository.findAll();

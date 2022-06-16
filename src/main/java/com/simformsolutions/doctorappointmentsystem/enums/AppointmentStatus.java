@@ -5,7 +5,7 @@ public enum AppointmentStatus {
     BOOKED("Booked"),
     CANCELLED("Cancelled"),
     AVAILABLE("Available"),
-    RESCHDULE("Reschedule");
+    RESCHEDULE("Reschedule");
     public final String label;
     AppointmentStatus(String label) {
         this.label = label;
