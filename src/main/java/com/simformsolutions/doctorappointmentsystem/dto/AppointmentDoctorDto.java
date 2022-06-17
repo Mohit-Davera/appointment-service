@@ -18,7 +18,6 @@ import java.time.LocalTime;
 public class AppointmentDoctorDto {
 
     private int appointmentId;
-    @JsonIgnore
     private int doctorId;
     private String doctorName;
     private int experience;
@@ -27,7 +26,7 @@ public class AppointmentDoctorDto {
     private LocalTime bookingTime;
     @JsonFormat(pattern="dd/MM/yyyy",shape = JsonFormat.Shape.STRING)
     private LocalDate bookedDate;
-    private String status;
+    private String status=AppointmentStatus.AVAILABLE.getLabel();
 
     public AppointmentDoctorDto(int doctorId,String doctorName, int experience, String specialist, LocalTime bookingTime, LocalDate bookedDate) {
         this.doctorId=doctorId;

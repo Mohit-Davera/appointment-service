@@ -10,8 +10,10 @@ import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -33,9 +35,9 @@ public class Appointment {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime time;
 
-    @NotNull(message = "Enter Date You Want To Book Appointment")
-
+    @NotNull(message = "Please Enter Appointment Date")
     @JsonFormat(pattern="dd/MM/yyyy",shape = JsonFormat.Shape.STRING)
+    @FutureOrPresent(message = "Please Enter Today's Date or Future Date")
     private LocalDate date;
 
     @NotEmpty(message = "Please Enter Patient Name")

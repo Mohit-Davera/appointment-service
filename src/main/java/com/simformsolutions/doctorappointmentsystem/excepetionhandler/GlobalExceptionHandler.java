@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,11 +25,22 @@ public class GlobalExceptionHandler {
                 errors.put(error.getField(), error.getDefaultMessage()));
         return errors;
     }
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public Map<String, String> exception(ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+        Set<ConstraintViolation<?>> set = ex.getConstraintViolations();
+        set.forEach(
+                constraintViolation -> errors.put(constraintViolation.getPropertyPath().toString(),constraintViolation.getMessageTemplate())
+        );
+        return errors;
+    }
 
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     public ResponseEntity<Object> exception(DataIntegrityViolationException exception) {
         return new ResponseEntity<>("Email Already Exists", HttpStatus.CONFLICT);
     }
+
+
 
     @ExceptionHandler(value = NoDoctorAvailableExcepetion.class)
     public ResponseEntity<Object> exception(NoDoctorAvailableExcepetion ex){
@@ -63,5 +77,9 @@ public class GlobalExceptionHandler {
         return  new ResponseEntity<>("Cannot Change Status Of This Appointment",HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = ScheduleNotFoundException.class)
+    public ResponseEntity<Object> exception(ScheduleNotFoundException ex){
+        return  new ResponseEntity<>("No Schedule Found For This Exception",HttpStatus.BAD_REQUEST);
+    }
 
 }

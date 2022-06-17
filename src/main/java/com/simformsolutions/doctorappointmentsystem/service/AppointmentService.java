@@ -8,12 +8,12 @@ import com.simformsolutions.doctorappointmentsystem.model.Appointment;
 import com.simformsolutions.doctorappointmentsystem.model.Doctor;
 import com.simformsolutions.doctorappointmentsystem.model.Schedule;
 import com.simformsolutions.doctorappointmentsystem.model.User;
-import com.simformsolutions.doctorappointmentsystem.projection.DoctorDetailsDto;
 import com.simformsolutions.doctorappointmentsystem.projection.DoctorInter;
 import com.simformsolutions.doctorappointmentsystem.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -21,25 +21,20 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 public class AppointmentService {
 
     @Autowired
     private final ScheduleRepository scheduleRepository;
-
     @Autowired
     private final DoctorRepository doctorRepository;
-
     @Autowired
     private final  UserRepository userRepository;
-
     @Autowired
     private final AppointmentDoctorDtoConverter appointmentDoctorDtoConverter;
     @Autowired
-    private final  SpecialityRepository specialityRepository;
-
+    private final SpecialityRepository specialityRepository;
     @Autowired
     private final AppointmentRepository appointmentRepository;
 
@@ -57,26 +52,18 @@ public class AppointmentService {
 
     public AppointmentDoctorDto checkSchedule(ArrayList<Doctor> doctors, Appointment userAppointment) {
 
+        boolean futureAppointment;
+        LocalTime currentTime = getCurrentLocalTime();
+
         //Predicates
-        LocalTime currentTime = LocalTime.now();
-        int minutes = currentTime.getMinute();
-        if (minutes >= 30) {
-            currentTime = currentTime.minusHours(10);
-            currentTime = currentTime.plusHours(1);
-            currentTime = currentTime.truncatedTo(ChronoUnit.HOURS);
-
-        } else {
-            currentTime = currentTime.plusMinutes(30 - minutes).truncatedTo(ChronoUnit.MINUTES);
-        }
-
         Predicate<Appointment> sameDateFilter = appointment -> appointment.getDate().equals(userAppointment.getDate());
         Predicate<Appointment> statusFilter = appointment -> appointment.getStatus().equals(AppointmentStatus.BOOKED);
         Predicate<Doctor> appointmentNullFilter = doctor -> doctor.getAppointments().size() == 0;
-        Predicate<Optional<Doctor>> presentDoctor = Optional::isPresent;
+
 
         //Add Doctor Who Don't Have Any Appointments
         ArrayList<Doctor> freeDoctors = new ArrayList<>(doctors.stream().filter(appointmentNullFilter).toList());
-        List<AppointmentDoctorDto> availableDoctors = new ArrayList<>(appointmentDoctorDtoConverter.freeDoctorToBookedDoctorConverter(freeDoctors, userAppointment, currentTime));
+        List<AppointmentDoctorDto> availableDoctors = new ArrayList<>(appointmentDoctorDtoConverter.freeDoctorToBookedDoctorConverter(freeDoctors, userAppointment,currentTime));
 
         if (freeDoctors.size() != 0) {
             doctors.removeAll(freeDoctors);
@@ -89,19 +76,19 @@ public class AppointmentService {
             for (Doctor d : doctors) {
                 Optional<LocalTime> optionalDoctorBookedTill = d.getAppointments().stream().filter(sameDateFilter.and(statusFilter)).map(Appointment::getTime).max(LocalTime::compareTo);
                 if (optionalDoctorBookedTill.isEmpty()) {
-                    appointmentDoctorDto = new AppointmentDoctorDto(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(), d.getExperience(), userAppointment.getSpeciality(), (d.getEntryTime().plusHours(1L)), userAppointment.getDate());
+                    appointmentDoctorDto = new AppointmentDoctorDto(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(), d.getExperience(), userAppointment.getSpeciality(), (d.getEntryTime()), userAppointment.getDate());
                     availableDoctors.add(appointmentDoctorDto);
                 }
                 if (optionalDoctorBookedTill.isPresent()) {
                     doctorBookedTill = optionalDoctorBookedTill.get();
                     if ((doctorBookedTill.equals(currentTime) || doctorBookedTill.isBefore(currentTime))
-                    && currentTime.getHour() + 1 < d.getExitTime().getHour())
+                    && currentTime.plusMinutes(60).getHour() + 1 < d.getExitTime().getHour())
                     {
-                        appointmentDoctorDto = new AppointmentDoctorDto(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(), d.getExperience(), userAppointment.getSpeciality(), doctorBookedTill.plusHours(1), userAppointment.getDate());
+                        appointmentDoctorDto = new AppointmentDoctorDto(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(), d.getExperience(), userAppointment.getSpeciality(), currentTime.plusHours(1), userAppointment.getDate());
                         availableDoctors.add(appointmentDoctorDto);
                     }
-                    else if(doctorBookedTill.isAfter(currentTime) && doctorBookedTill.getHour() + 1 < d.getExitTime().getHour()){
-//                        doctorBookedTill = doctorBookedTill.plusHours(1);
+                    else if(doctorBookedTill.isAfter(currentTime)
+                            && doctorBookedTill.plusMinutes(60).getHour() + 1 < d.getExitTime().getHour()){
                         appointmentDoctorDto = new AppointmentDoctorDto(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(), d.getExperience(), userAppointment.getSpeciality(), doctorBookedTill.plusHours(1), userAppointment.getDate());
                         availableDoctors.add(appointmentDoctorDto);
                     }
@@ -151,19 +138,23 @@ public class AppointmentService {
         }
     }
 
-    public ArrayList<Doctor> bookAppointment(Appointment appointment, int userId, boolean isDoctorChange){
-        List<DoctorInter> doctorInterList = doctorRepository.findDoctorsWithSpeciality(specialityRepository.findByTitle(appointment.getSpeciality()).getSpecialityId());
+    public ArrayList<AppointmentDoctorDto> bookAppointmentAgain(Appointment appointment, int userId){
         int doctorId = appointmentRepository.findDoctorByAppointmentId(appointment.getAppointmentId());
-        if (doctorInterList.size() == 0) {
-            throw new NoSpecialistFoundExcpetion();
-        }
-        List<Doctor> doctors = doctorInterList.stream().map(DoctorInter::getDoctorId).map(doctorRepository::findById).filter(Optional::isPresent).map(Optional::get).toList();
-        doctors.forEach(
-                doctor -> new DoctorDetailsDto(doctor.getDoctorId(),doctor.getFirstName(),doctor.getLastName(),doctor.getExperience())
-        );
-        ArrayList<Doctor> reassignableDoctors = new ArrayList<>(globalAvailableDoctors.stream().map(AppointmentDoctorDto::getDoctorId).map(doctorRepository::findById).filter(Optional::isPresent).map(Optional::get).distinct().collect(Collectors.toList()));
-        reassignableDoctors.remove(doctorRepository.findById(doctorId).get());
-        return reassignableDoctors;
+        AppointmentDoctorDto currentlyAssignedDoctor = globalAvailableDoctors.stream().filter(appointmentDoctorDto -> appointmentDoctorDto.getDoctorId() == doctorId).toList().get(0);
+        globalAvailableDoctors.forEach(appointmentDoctorDto -> appointmentDoctorDto.setAppointmentId(appointment.getAppointmentId()));
+        globalAvailableDoctors.remove(currentlyAssignedDoctor);
+        return globalAvailableDoctors;
+    }
 
+    public LocalTime getCurrentLocalTime(){
+        LocalTime currentTime = LocalTime.now();
+        int minutes = currentTime.getMinute();
+        if (minutes >= 30) {
+            currentTime = currentTime.plusHours(1);
+            currentTime = currentTime.truncatedTo(ChronoUnit.HOURS);
+        } else {
+            currentTime = currentTime.plusMinutes(30 - minutes).truncatedTo(ChronoUnit.MINUTES);
+        }
+        return currentTime;
     }
 }

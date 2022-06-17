@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Tuple;
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +36,12 @@ public class AppointmentDoctorDtoConverter {
     public List<AppointmentDoctorDto> freeDoctorToBookedDoctorConverter(List<Doctor> doctors, Appointment userAppointment, LocalTime currentTime)
     {
         List<AppointmentDoctorDto> bookedDoctors = new ArrayList<>();
-
         doctors.forEach(
                 d -> bookedDoctors.add(
                         new AppointmentDoctorDto(d.getDoctorId(),  d.getFirstName()+" "+d.getLastName(),
                                 d.getExperience(),
                                 userAppointment.getSpeciality(),
-                                currentTime,
+                                userAppointment.getDate().getDayOfMonth() <= LocalDate.now().getDayOfMonth()?currentTime:d.getEntryTime(),
                                 userAppointment.getDate()
                         )
                 ));

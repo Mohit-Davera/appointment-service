@@ -45,12 +45,12 @@ public class UserController {
     }
 
     @GetMapping("/{appointmentId}/doctors")
-    public ResponseEntity<ArrayList<Doctor>> availableDoctors(@PathVariable("appointmentId") int appointmentId, @RequestParam("userId") int userId) {
-        return new Responder<ArrayList<Doctor>>().apply(userService.availableDoctors(appointmentId, userId));
+    public ResponseEntity<ArrayList<AppointmentDoctorDto>> availableDoctors(@PathVariable("appointmentId") int appointmentId, @RequestParam("userId") int userId) {
+        return new Responder<ArrayList<AppointmentDoctorDto>>().apply(userService.availableDoctors(appointmentId, userId));
     }
 
-/*    @PostMapping("/{appointmentId}/doctor/{doctorId}")
-    public ResponseEntity<AppointmentDoctorDto> changeDoctor(@PathVariable("appointmentId") int appointmentId, @RequestParam("userId") int userId, @RequestParam("doctorId") int doctorId) {
-//        return new Responder<ArrayList<AppointmentDoctorDto>>().apply(userService.rescheduleAppointments(appointmentId, userId));
-    }*/
+    @PostMapping("/changedoctor")
+    public ResponseEntity<AppointmentDoctorDto> changeDoctor(@RequestBody AppointmentDoctorDto appointmentDoctorDto,@RequestParam("userId") int userId) {
+        return new Responder<AppointmentDoctorDto>().apply(userService.changeDoctor(appointmentDoctorDto, userId));
+    }
 }
