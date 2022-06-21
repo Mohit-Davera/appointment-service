@@ -17,6 +17,7 @@ import com.simformsolutions.appointment.repository.DoctorRepository;
 import com.simformsolutions.appointment.repository.ScheduleRepository;
 import com.simformsolutions.appointment.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -55,11 +56,17 @@ public class UserService {
     }
 
     public UserDetailsDto addUser(UserDetailsDto userDetailsDto){
-        userDetailsDto.setUserId(userRepository.save(modelMapper.map(userDetailsDto,User.class)).getUserId());
+        try{
+            userDetailsDto.setUserId(userRepository.save(modelMapper.map(userDetailsDto,User.class)).getUserId());
+        }
+        catch (Exception ex){
+            throw new DataIntegrityViolationException("Email Already Exists");
+        }
+
         return userDetailsDto;
     }
 
-    public AppointmentDoctorDto rescheduleAppointment(int appointmentId, int userId, String days) {
+    public AppointmentDoctorDto  rescheduleAppointment(int appointmentId, int userId, String days) {
         Optional<Appointment> optionalAppointment = appointmentRepository.findById(appointmentId);
         int rescheduleDays = Integer.parseInt(days);
         if (optionalAppointment.isPresent()){

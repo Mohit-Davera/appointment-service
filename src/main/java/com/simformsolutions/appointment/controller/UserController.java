@@ -24,14 +24,13 @@ public class UserController {
         return userService.addUser(userDetailsDto);
     }
 
-
     @GetMapping("/")
     public ResponseEntity<List<AppointmentDoctorDto>> showAppointments(@RequestParam int userId) {
         return new Responder<List<AppointmentDoctorDto>>().apply(userService.getAppointments(userId));
     }
 
     @PostMapping("/{appointmentId}/cancel")
-    public ResponseEntity<AppointmentDoctorDto> cancelAppointment(@PathVariable("appointmentId") int appointmentId, int userId) {
+    public ResponseEntity<AppointmentDoctorDto> cancelAppointment(@PathVariable("appointmentId") int appointmentId,@RequestParam int userId) {
         return new Responder<AppointmentDoctorDto>().apply(userService.cancelAppointment(appointmentId));
     }
 
@@ -41,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/{appointmentId}/doctors")
-    public ResponseEntity<List<AppointmentDoctorDto>> availableDoctors(@PathVariable("appointmentId") int appointmentId,int userId) {
+    public ResponseEntity<List<AppointmentDoctorDto>> availableDoctors(@PathVariable("appointmentId") int appointmentId,@RequestParam int userId) {
         return new Responder<List<AppointmentDoctorDto>>().apply(userService.getAvailableDoctors(appointmentId, userId));
     }
 
