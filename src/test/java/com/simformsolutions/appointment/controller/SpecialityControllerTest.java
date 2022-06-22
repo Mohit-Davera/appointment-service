@@ -4,9 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
-import com.simformsolutions.appointment.dto.appointment.AppointmentDetailsDto;
-import com.simformsolutions.appointment.service.AppointmentService;
+import com.simformsolutions.appointment.dto.speciality.SpecialityTitleDto;
+import com.simformsolutions.appointment.service.SpecialityService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,38 +16,45 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AppointmentControllerTest {
+class SpecialityControllerTest {
 
-    static final String BASE_URL = "/appointment";
-    static final AppointmentDetailsDto APPOINTMENT_DETAILS_DTO = new AppointmentDetailsDto("ayurveda", "random issue", LocalDate.parse("17/12/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy")), "random user");
-    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO = new AppointmentDoctorDto(1, 1, "Ravi D", 1, "ayurveda", LocalTime.parse("10:00", DateTimeFormatter.ofPattern("HH:mm")), LocalDate.parse("17/12/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy")), "BOOKED");
+    static final String BASE_URL = "/speciality";
+    static final SpecialityTitleDto SPECIALITY_TITLE_DTO = new SpecialityTitleDto(Arrays.asList("ayurveda", "dental surgeon", "orthopedist"));
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     ObjectWriter objectWriter = objectMapper.writer();
     @MockBean
-    private AppointmentService appointmentService;
+    private SpecialityService specialityService;
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    void bookAppointmentSuccess() throws Exception {
-        String content = objectWriter.writeValueAsString(APPOINTMENT_DETAILS_DTO);
+    void registerDoctorSuccess() throws Exception {
+        Mockito.when(specialityService.showSpecialities()).thenReturn(SPECIALITY_TITLE_DTO);
 
-        Mockito.when(appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1)).thenReturn(APPOINTMENT_DOCTOR_DTO);
+        mockMvc.perform(MockMvcRequestBuilders.get(BASE_URL + "/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().string(objectWriter.writeValueAsString(SPECIALITY_TITLE_DTO)));
+    }
 
-        mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL + "/book")
+    @Test
+    void addSpecialitiesSuccess() throws Exception {
+        Mockito.when(specialityService.saveNewSpecialities(SPECIALITY_TITLE_DTO.getTitles())).thenReturn(SPECIALITY_TITLE_DTO);
+        String content = objectWriter.writeValueAsString(SPECIALITY_TITLE_DTO);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL + "/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(content).param("userId", String.valueOf(1)))
+                        .content(content))
                 .andExpect(status().isOk())
-                .andExpect(content().string(objectWriter.writeValueAsString(APPOINTMENT_DOCTOR_DTO)));
+                .andExpect(content().string(objectWriter.writeValueAsString(SPECIALITY_TITLE_DTO)));
     }
 }

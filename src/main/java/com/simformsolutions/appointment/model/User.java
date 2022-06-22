@@ -33,4 +33,15 @@ public class User {
         appointments.add(a);
     }
 
+    public User(String name, String email, String number, String password) {
+        this.name = name;
+        this.email = email;
+        this.number = number;
+        this.password = password;
+    }
+    public User(int userId,String name, String email, String number, String password) {
+        this(name,email,number,password);
+        this.userId = userId;
+
+    }
 }

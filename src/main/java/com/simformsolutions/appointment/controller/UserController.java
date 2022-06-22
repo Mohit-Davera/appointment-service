@@ -44,7 +44,7 @@ public class UserController {
         return new Responder<List<AppointmentDoctorDto>>().apply(userService.getAvailableDoctors(appointmentId, userId));
     }
 
-    @PostMapping("/changedoctor")
+    @PostMapping("/change-doctor")
     public ResponseEntity<AppointmentDoctorDto> changeDoctor(@RequestBody AppointmentDoctorDto appointmentDoctorDto, @RequestParam("userId") int userId) {
         return new Responder<AppointmentDoctorDto>().apply(userService.changeDoctor(appointmentDoctorDto, userId));
     }
