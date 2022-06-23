@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -56,7 +57,14 @@ public class Doctor {
 
     @JsonIgnore
     public Appointment addAppointment(Appointment appointment) {
-        appointments.add(appointment);
+        if (this.appointments == null)
+            this.appointments = new ArrayList<>(List.of(appointment));
+        else
+            this.appointments.add(appointment);
         return appointment;
+    }
+
+    public Doctor(int doctorId) {
+        this.doctorId = doctorId;
     }
 }

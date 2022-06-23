@@ -39,5 +39,8 @@ public class Appointment {
 
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
-    
+
+    public Appointment(int appointmentId) {
+        this.appointmentId = appointmentId;
+    }
 }

@@ -118,7 +118,7 @@ public class UserService {
         if (optionalSchedule.isPresent() && optionalUser.isPresent() && optionalDoctor.isPresent() && optionalAppointment.isPresent()) {
 
             Schedule schedule = optionalSchedule.get();
-            User User = optionalUser.get();
+            User user = optionalUser.get();
             Appointment appointment = optionalAppointment.get();
             Doctor newBookedDoctor = optionalDoctor.get();
 
@@ -127,7 +127,7 @@ public class UserService {
             appointment.setStatus(AppointmentStatus.BOOKED);
             appointmentDoctorDto.setStatus(AppointmentStatus.BOOKED.label);
 
-            User.setAppointment(appointment);
+            user.addAppointment(appointment);
             newBookedDoctor.addAppointment(appointment);
             schedule.setAppointment(appointment);
             appointmentDoctorDto.setAppointmentId(scheduleRepository.save(schedule).getAppointment().getAppointmentId());
