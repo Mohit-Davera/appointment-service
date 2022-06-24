@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -111,7 +110,7 @@ class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL + "/1/reschedule")
                         .param("appointmentId", String.valueOf(1))
                         .param("userId", String.valueOf(1))
-                        .param("days","3")
+                        .param("days", "3")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(objectWriter.writeValueAsString(APPOINTMENT_DOCTOR_DTO1)))
                 .andExpect(status().isOk());
@@ -119,7 +118,6 @@ class UserControllerTest {
 
     @Test
     void availableDoctorsSuccess() throws Exception {
-
 
         Mockito.when(userService.getAvailableDoctors(1, 1)).thenReturn(APPOINTMENT_DOCTOR_DTOS);
 

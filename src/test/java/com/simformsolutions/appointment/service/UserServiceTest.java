@@ -26,14 +26,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.persistence.Tuple;
-import javax.print.Doc;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -73,11 +69,14 @@ class UserServiceTest {
     @MockBean
     private AppointmentService appointmentService;
 
+    UserServiceTest() {
+    }
+
     @Test
     void addUserSuccess() {
 
         //Expected
-        Mockito.when(modelMapper.map(any(UserDetailsDto.class), any(Class.class))).thenReturn(getUserDetails(false));
+        Mockito.when(modelMapper.map(any(UserDetailsDto.class), any())).thenReturn(getUserDetails(false));
         Mockito.when(userRepository.save(any(User.class))).thenReturn(getUserDetails(true));
 
         //Actual Data
@@ -89,10 +88,11 @@ class UserServiceTest {
     void addUserConflict() {
 
         //Expected
-        Mockito.when(modelMapper.map(any(UserDetailsDto.class), any(Class.class))).thenReturn(getUserDetails(false));
+        Mockito.when(modelMapper.map(any(UserDetailsDto.class), any())).thenReturn(getUserDetails(false));
         Mockito.when(userRepository.save(any(User.class))).thenThrow(DataIntegrityViolationException.class);
         //Actual Data
-        assertThrows(DataIntegrityViolationException.class, () -> userService.addUser(getUserDetailsDto(false)));
+        UserDetailsDto userDetailsDto = getUserDetailsDto(false);
+        assertThrows(DataIntegrityViolationException.class, () -> userService.addUser(userDetailsDto));
     }
 
     @Test
@@ -126,9 +126,9 @@ class UserServiceTest {
     @Test
     void rescheduleAppointmentsWithDaysSuccess() {
         Mockito.when(appointmentRepository.findById(1)).thenReturn(getOptionalAppointment(false, false, true, false));
-        Mockito.when(modelMapper.map(any(UserDetailsDto.class), any(Class.class))).thenReturn(APPOINTMENT_DETAILS_DTO);
+        Mockito.when(modelMapper.map(any(UserDetailsDto.class), any())).thenReturn(APPOINTMENT_DETAILS_DTO);
         Mockito.when(appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1)).thenReturn(APPOINTMENT_DOCTOR_DTO1);
-        Mockito.when(appointmentRepository.save(getOptionalAppointment(false, false, true, false).get())).thenReturn(getOptionalAppointment(false, false, true, true).get());
+        Mockito.when(appointmentRepository.save(Objects.requireNonNull(getOptionalAppointment(false, false, true, false).orElse(null)))).thenReturn(getOptionalAppointment(false, false, true, true).orElse(null));
         Mockito.when(appointmentRepository.findDetailsOfAppointment(1)).thenReturn(getListTuple());
         Mockito.when(appointmentDoctorDtoConverter.tuplesToAppointmentDoctorConverter(anyList())).thenReturn(APPOINTMENT_DOCTOR_DTOS);
 
@@ -145,7 +145,8 @@ class UserServiceTest {
     void cancelAppointmentSuccess() {
         Optional<Appointment> optionalAppointment = getOptionalAppointment(false, false, true, false);
         Mockito.when(appointmentRepository.findById(1)).thenReturn(optionalAppointment);
-        Mockito.when(appointmentRepository.save(optionalAppointment.get())).thenReturn(optionalAppointment.get());
+        assert optionalAppointment.orElse(null) != null;
+        Mockito.when(appointmentRepository.save(optionalAppointment.orElse(null))).thenReturn(optionalAppointment.orElse(null));
         Mockito.when(appointmentRepository.findDetailsOfAppointment(1)).thenReturn(getListTuple());
         Mockito.when(appointmentDoctorDtoConverter.tuplesToAppointmentDoctorConverter(anyList())).thenReturn(APPOINTMENT_DOCTOR_DTOS);
 
@@ -163,7 +164,8 @@ class UserServiceTest {
     void getAvailableDoctorsSuccess() {
         Optional<Appointment> optionalAppointment = getOptionalAppointment(false, false, true, false);
         Mockito.when(appointmentRepository.findById(1)).thenReturn(optionalAppointment);
-        Mockito.when(appointmentService.bookAppointmentAgain(optionalAppointment.get(), 1)).thenReturn(APPOINTMENT_DOCTOR_DTOS);
+        assert optionalAppointment.orElse(null) != null;
+        Mockito.when(appointmentService.bookAppointmentAgain(optionalAppointment.orElse(null), 1)).thenReturn(APPOINTMENT_DOCTOR_DTOS);
 
         assertEquals(APPOINTMENT_DOCTOR_DTOS, userService.getAvailableDoctors(1, 1));
     }
@@ -176,10 +178,10 @@ class UserServiceTest {
 
     @Test
     void changeDoctorSuccess() {
-        Optional<Schedule> optionalSchedule = Optional.of(new Schedule(LocalTime.now(), LocalDate.now(), getOptionalDoctor().get(), getOptionalUser().get(), new Appointment(1)));
-        optionalSchedule.get().setId(1);
-        optionalSchedule.get().setAppointment(new Appointment(1));
-        Schedule schedule = optionalSchedule.get();
+        Optional<Schedule> optionalSchedule = Optional.of(new Schedule(LocalTime.now(), LocalDate.now(), getOptionalDoctor().orElse(null), getOptionalUser().orElse(null), new Appointment(1)));
+        optionalSchedule.orElse(null).setId(1);
+        optionalSchedule.orElse(null).setAppointment(new Appointment(1));
+        Schedule schedule = optionalSchedule.orElse(null);
 
         Mockito.when(scheduleRepository.getScheduleFromAppointmentId(APPOINTMENT_DOCTOR_DTO1.getAppointmentId())).thenReturn(getOptionalSchedule(false,true));
         Mockito.when(userRepository.findById(1)).thenReturn(getOptionalUser());
@@ -207,7 +209,7 @@ class UserServiceTest {
     private List<Tuple> getListTuple() {
         Tuple mockedTuple1 = Mockito.mock(Tuple.class);
         Tuple mockedTuple2 = Mockito.mock(Tuple.class);
-        List<Tuple> tuples = new ArrayList<Tuple>();
+        List<Tuple> tuples = new ArrayList<>();
         tuples.add(0, mockedTuple1);
         tuples.add(1, mockedTuple2);
         return tuples;
@@ -220,16 +222,16 @@ class UserServiceTest {
         Optional<Appointment> optionalAppointment = Optional.of(new Appointment(1, "ayurveda", LocalTime.parse("10:00", DateTimeFormatter.ofPattern("HH:mm"))
                 , LocalDate.parse("17/12/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy")), "random patient", "random issue", AppointmentStatus.AVAILABLE));
         if (withId)
-            optionalAppointment.get().setAppointmentId(1);
+            optionalAppointment.orElse(null).setAppointmentId(1);
         if (afterCurrentTime) {
             if (isCancelled) {
-                optionalAppointment.get().setStatus(AppointmentStatus.CANCELLED);
-                optionalAppointment.get().setEndTime(LocalTime.now().plusHours(1));
+                optionalAppointment.orElse(null).setStatus(AppointmentStatus.CANCELLED);
+                optionalAppointment.orElse(null).setEndTime(LocalTime.now().plusHours(1));
             } else
-                optionalAppointment.get().setEndTime(LocalTime.now().plusHours(1));
+                optionalAppointment.orElse(null).setEndTime(LocalTime.now().plusHours(1));
         }
         if (isCancelled)
-            optionalAppointment.get().setStatus(AppointmentStatus.CANCELLED);
+            optionalAppointment.orElse(null).setStatus(AppointmentStatus.CANCELLED);
         return optionalAppointment;
     }
 
@@ -237,21 +239,21 @@ class UserServiceTest {
         if (isNull) {
             return Optional.empty();
         }
-        Optional<Schedule> optionalSchedule = Optional.of(new Schedule(LocalTime.now(), LocalDate.now(), getOptionalDoctor().get(), getOptionalUser().get(), getOptionalAppointment(false, false, true, true).get()));
+        Optional<Schedule> optionalSchedule = Optional.of(new Schedule(LocalTime.now(), LocalDate.now(), getOptionalDoctor().orElse(null), getOptionalUser().orElse(null), getOptionalAppointment(false, false, true, true).orElse(null)));
         if (withId)
-            optionalSchedule.get().setId(1);
-        optionalSchedule.get().setAppointment(new Appointment(1));
+            optionalSchedule.orElse(null).setId(1);
+        optionalSchedule.orElse(null).setAppointment(new Appointment(1));
         return optionalSchedule;
     }
     private Optional<Doctor> getOptionalDoctor(){
         Doctor d = new Doctor();
-        d.setAppointments(new ArrayList<>(List.of(getOptionalAppointment(false, false, false, true).get())));
+        d.setAppointments(new ArrayList<>(List.of(Objects.requireNonNull(getOptionalAppointment(false, false, false, true).orElse(null)))));
         return Optional.of(d);
     }
 
     private Optional<User> getOptionalUser(){
         User u = new User();
-        u.setAppointments(new ArrayList<>(List.of(getOptionalAppointment(false, false, true, true).get())));
+        u.setAppointments(new ArrayList<>(List.of(Objects.requireNonNull(getOptionalAppointment(false, false, true, true).orElse(null)))));
         return Optional.of(u);
     }
 }

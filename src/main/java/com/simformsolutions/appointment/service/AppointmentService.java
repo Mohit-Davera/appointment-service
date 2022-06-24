@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 public class AppointmentService {
@@ -59,7 +58,6 @@ public class AppointmentService {
         Predicate<Appointment> sameDateFilter = appointment -> appointment.getDate().equals(userAppointment.getDate());
         Predicate<Appointment> statusFilter = appointment -> appointment.getStatus().equals(AppointmentStatus.BOOKED);
         Predicate<Doctor> appointmentNullFilter = doctor -> doctor.getAppointments().isEmpty();
-
 
         //Add Doctor Who Don't Have Any Appointments
         ArrayList<Doctor> freeDoctors = new ArrayList<>(doctors.stream().filter(appointmentNullFilter).toList());
@@ -146,7 +144,7 @@ public class AppointmentService {
         List<AppointmentDoctorDto> availableDoctors = checkSchedule(new ArrayList<>(doctors), appointment);
         int doctorId = appointmentRepository.findDoctorByAppointmentId(appointment.getAppointmentId());
         availableDoctors.forEach(appointmentDoctorDto -> appointmentDoctorDto.setAppointmentId(appointment.getAppointmentId()));
-        return availableDoctors.stream().filter(appointmentDoctorDto -> appointmentDoctorDto.getDoctorId() != doctorId).collect(Collectors.toList());
+        return availableDoctors.stream().filter(appointmentDoctorDto -> appointmentDoctorDto.getDoctorId() != doctorId).toList();
     }
 
     private LocalTime getCurrentLocalTime() {

@@ -20,8 +20,8 @@ public class AppointmentController {
     }
 
     @PostMapping("/book")
-    public ResponseEntity<AppointmentDoctorDto> bookAppointment(@Valid @RequestBody AppointmentDetailsDto appointmentDetailsDto, @RequestParam int userId){
-        return new Responder<AppointmentDoctorDto>().apply(appointmentService.saveAppointment(appointmentDetailsDto,userId));
+    public ResponseEntity<AppointmentDoctorDto> bookAppointment(@Valid @RequestBody AppointmentDetailsDto appointmentDetailsDto, @RequestParam int userId) {
+        return new Responder<AppointmentDoctorDto>().apply(appointmentService.saveAppointment(appointmentDetailsDto, userId));
 
     }
 }

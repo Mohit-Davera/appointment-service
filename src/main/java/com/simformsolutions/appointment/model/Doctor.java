@@ -55,6 +55,10 @@ public class Doctor {
     @JoinColumn(name = "doctorId", referencedColumnName = "doctorId")
     private List<Appointment> appointments;
 
+    public Doctor(int doctorId) {
+        this.doctorId = doctorId;
+    }
+
     @JsonIgnore
     public Appointment addAppointment(Appointment appointment) {
         if (this.appointments == null)
@@ -62,9 +66,5 @@ public class Doctor {
         else
             this.appointments.add(appointment);
         return appointment;
-    }
-
-    public Doctor(int doctorId) {
-        this.doctorId = doctorId;
     }
 }

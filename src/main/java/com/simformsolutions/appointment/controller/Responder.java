@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Responder<T> {
     private static final Logger log = LoggerFactory.getLogger(Responder.class);
+
     public ResponseEntity<T> apply(T dto) {
         log.info(dto.toString());
         return new ResponseEntity<>(dto, HttpStatus.OK);
