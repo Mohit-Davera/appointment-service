@@ -60,11 +60,10 @@ public class Doctor {
     }
 
     @JsonIgnore
-    public Appointment addAppointment(Appointment appointment) {
+    public void addAppointment(Appointment appointment) {
         if (this.appointments == null)
             this.appointments = new ArrayList<>(List.of(appointment));
         else
             this.appointments.add(appointment);
-        return appointment;
     }
 }

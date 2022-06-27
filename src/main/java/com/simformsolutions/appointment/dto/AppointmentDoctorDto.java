@@ -26,12 +26,19 @@ public class AppointmentDoctorDto {
     private LocalDate bookedDate;
     private String status = AppointmentStatus.AVAILABLE.getLabel();
 
-    public AppointmentDoctorDto(int doctorId, String doctorName, int experience, String specialist, LocalTime bookingTime, LocalDate bookedDate) {
+    public AppointmentDoctorDto(int doctorId, String doctorName, int experience, String specialist, LocalTime bookingTime,LocalDate bookedDate ) {
         this.doctorId = doctorId;
         this.doctorName = "Dr. " + doctorName;
         this.experience = experience;
         this.specialist = specialist;
         this.bookingTime = bookingTime;
+        this.bookedDate = bookedDate;
+    }
+    public AppointmentDoctorDto(int doctorId, String doctorName, int experience, String specialist,LocalDate bookedDate){
+        this.doctorId = doctorId;
+        this.doctorName = "Dr. " + doctorName;
+        this.experience = experience;
+        this.specialist = specialist;
         this.bookedDate = bookedDate;
     }
 
