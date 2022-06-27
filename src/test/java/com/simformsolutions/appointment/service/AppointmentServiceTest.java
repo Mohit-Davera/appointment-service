@@ -5,7 +5,7 @@ import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
 import com.simformsolutions.appointment.dto.appointment.AppointmentDetailsDto;
 import com.simformsolutions.appointment.enums.AppointmentStatus;
 import com.simformsolutions.appointment.excepetion.NoDoctorAvailableExcepetion;
-import com.simformsolutions.appointment.excepetion.NoSpecialistFoundExcpetion;
+import com.simformsolutions.appointment.excepetion.NoSpecialistFoundException;
 import com.simformsolutions.appointment.excepetion.SpecialityException;
 import com.simformsolutions.appointment.excepetion.UserNotFoundException;
 import com.simformsolutions.appointment.model.*;
@@ -94,7 +94,7 @@ class AppointmentServiceTest {
         Mockito.when(specialityRepository.existsByTitle(SPECIALITY_TITLE)).thenReturn(true);
         Mockito.when(specialityRepository.findByTitle(SPECIALITY_TITLE)).thenReturn(new Speciality(1, SPECIALITY_TITLE, null));
         Mockito.when(doctorRepository.findDoctorsIdWithSpeciality(1)).thenReturn(new ArrayList<>());
-        assertThrows(NoSpecialistFoundExcpetion.class, () -> appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1));
+        assertThrows(NoSpecialistFoundException.class, () -> appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1));
     }
 
     @Test

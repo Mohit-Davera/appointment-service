@@ -62,9 +62,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = NoSpecialistFoundExcpetion.class)
+    @ExceptionHandler(value = NoSpecialistFoundException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Cannot Find Specialist For Your Issue")
-    public ResponseEntity<Object> exception(NoSpecialistFoundExcpetion ex) {
+    public ResponseEntity<Object> exception(NoSpecialistFoundException ex) {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 

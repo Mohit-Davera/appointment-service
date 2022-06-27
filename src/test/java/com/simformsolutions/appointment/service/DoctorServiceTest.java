@@ -39,7 +39,7 @@ public class DoctorServiceTest {
             LocalTime.parse("10:00", DateTimeFormatter.ofPattern("HH:mm")),
             LocalTime.parse("21:00", DateTimeFormatter.ofPattern("HH:mm")), null);
 
-    
+
     @Autowired
     DoctorService doctorService;
 
