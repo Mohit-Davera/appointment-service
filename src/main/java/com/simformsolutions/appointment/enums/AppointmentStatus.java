@@ -1,4 +1,5 @@
 package com.simformsolutions.appointment.enums;
+
 public enum AppointmentStatus {
     BOOKED("Booked"),
     CANCELLED("Cancelled"),

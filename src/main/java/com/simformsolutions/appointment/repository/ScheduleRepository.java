@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ScheduleRepository extends JpaRepository<Schedule,Integer> {
+public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
-    @Query(value = "SELECT * FROM schedule WHERE schedule.appointment_appointment_id = :appointmentId",nativeQuery = true)
+    @Query(value = "SELECT * FROM schedule WHERE schedule.appointment_appointment_id = :appointmentId", nativeQuery = true)
     Optional<Schedule> getScheduleFromAppointmentId(@Param("appointmentId") int appointmentId);
 }

@@ -28,4 +28,11 @@ public class UserDetailsDto {
     @Size(min = 5, message = "Please Enter Password With More Than 5 Letters")
     @NotEmpty(message = "Please Enter Password")
     private String password;
+
+    public UserDetailsDto(String name, String email, String number, String password) {
+        this.name = name;
+        this.email = email;
+        this.number = number;
+        this.password = password;
+    }
 }

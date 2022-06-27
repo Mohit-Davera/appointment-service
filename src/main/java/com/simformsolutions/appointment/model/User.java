@@ -6,7 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -25,12 +28,24 @@ public class User {
 
     private String password;
     @JsonIgnore
-    @OneToMany(targetEntity = Appointment.class,cascade=CascadeType.ALL)
-    @JoinColumn(name = "userId",referencedColumnName = "userId")
+    @OneToMany(targetEntity = Appointment.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     private List<Appointment> appointments;
 
-    public void setAppointment(Appointment a){
-        appointments.add(a);
+    public User(String name, String email, String number, String password) {
+        this.name = name;
+        this.email = email;
+        this.number = number;
+        this.password = password;
     }
 
+    public User(int userId, String name, String email, String number, String password) {
+        this(name, email, number, password);
+        this.userId = userId;
+
+    }
+
+    public void addAppointment(Appointment a) {
+        this.appointments.add(a);
+    }
 }

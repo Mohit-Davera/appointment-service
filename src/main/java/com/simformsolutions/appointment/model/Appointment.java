@@ -30,7 +30,7 @@ public class Appointment {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
-    @JsonFormat(pattern="dd/MM/yyyy",shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "dd/MM/yyyy", shape = JsonFormat.Shape.STRING)
     private LocalDate date;
 
     private String patientName;
@@ -39,5 +39,8 @@ public class Appointment {
 
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
-    
+
+    public Appointment(int appointmentId) {
+        this.appointmentId = appointmentId;
+    }
 }

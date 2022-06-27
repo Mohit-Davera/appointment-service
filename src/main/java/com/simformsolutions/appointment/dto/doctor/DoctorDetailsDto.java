@@ -23,7 +23,7 @@ public class DoctorDetailsDto {
     private String lastName;
 
     @NotEmpty(message = "Please Enter Phone Number")
-    @Size(min = 10,max = 10,message = "Enter 10 Digit Number")
+    @Size(min = 10, max = 10, message = "Enter 10 Digit Number")
     private String phoneNumber;
 
     @Email
@@ -40,7 +40,7 @@ public class DoctorDetailsDto {
     private String collegeName;
 
     @NotNull
-    @Min(value = 2,message = "Required Experience Is 2 Years")
+    @Min(value = 2, message = "Required Experience Is 2 Years")
     private int experience;
 
     @NotNull(message = "Please Enter Speciality")

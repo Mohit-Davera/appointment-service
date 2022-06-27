@@ -20,7 +20,7 @@ public class DoctorController {
     }
 
     @PostMapping("/")
-    public DoctorDetailsDto registerDoctor(@Valid @RequestBody DoctorDetailsDto doctorDetailsDto){
+    public DoctorDetailsDto registerDoctor(@Valid @RequestBody DoctorDetailsDto doctorDetailsDto) {
         return doctorService.saveDoctor(doctorDetailsDto);
     }
 

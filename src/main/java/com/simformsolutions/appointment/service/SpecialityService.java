@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SpecialityService {
@@ -20,13 +19,13 @@ public class SpecialityService {
     }
 
     public SpecialityTitleDto showSpecialities(){
-        return new SpecialityTitleDto(specialityRepository.findAll().stream().map(Speciality::getTitle).collect(Collectors.toList()));
+        return new SpecialityTitleDto(specialityRepository.findAll().stream().map(Speciality::getTitle).toList());
     }
 
     public SpecialityTitleDto saveNewSpecialities(List<String> titles){
        specialityRepository.saveAll(
                 titles.stream().filter( title ->
-                        !specialityRepository.existsByTitle(title.toLowerCase())).map(Speciality::new).collect(Collectors.toList()));
+                        !specialityRepository.existsByTitle(title.toLowerCase())).map(Speciality::new).toList());
        return new SpecialityTitleDto(titles);
     }
 }
