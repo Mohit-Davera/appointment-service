@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "specialities")
 public class Speciality {
 
     @Id

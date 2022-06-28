@@ -5,12 +5,11 @@ import com.simformsolutions.appointment.model.Doctor;
 import com.simformsolutions.appointment.model.Speciality;
 import com.simformsolutions.appointment.repository.SpecialityRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -19,10 +18,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-public class DoctorServiceTest {
+@ExtendWith(MockitoExtension.class)
+class DoctorServiceTest {
 
 
 
@@ -40,14 +40,11 @@ public class DoctorServiceTest {
             LocalTime.parse("21:00", DateTimeFormatter.ofPattern("HH:mm")), null);
 
 
-    @Autowired
-    DoctorService doctorService;
+    private final SpecialityRepository specialityRepository = mock(SpecialityRepository.class);
 
-    @MockBean
-    SpecialityRepository specialityRepository;
+    private final ModelMapper modelMapper = mock(ModelMapper.class);
+    private final DoctorService doctorService = new DoctorService(specialityRepository,modelMapper);
 
-    @MockBean
-    ModelMapper modelMapper;
 
     @Test
     void saveDoctorSuccess() {

@@ -5,11 +5,10 @@ import com.simformsolutions.appointment.model.Doctor;
 import com.simformsolutions.appointment.model.Speciality;
 import com.simformsolutions.appointment.repository.SpecialityRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -19,9 +18,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 class SpecialityServiceTest {
 
     static final Doctor DOCTOR_WITHOUT_ID = new Doctor(0, "Mohit", "D", "9409598787", "davera@gmail.com", "rajkot", "BE", "GEC", 2, "ayurveda",
@@ -30,11 +30,9 @@ class SpecialityServiceTest {
 
     static final SpecialityTitleDto SPECIALITY_TITLE_DTO = new SpecialityTitleDto(new ArrayList<>(Arrays.asList("ayurveda", "dental surgeon", "cardiologist")));
 
-    @Autowired
-    SpecialityService specialityService;
+    private final SpecialityRepository specialityRepository = mock(SpecialityRepository.class);
+    private final SpecialityService specialityService = new SpecialityService(specialityRepository);
 
-    @MockBean
-    SpecialityRepository specialityRepository;
 
     @Test
     void showSpecialitiesSuccess() {

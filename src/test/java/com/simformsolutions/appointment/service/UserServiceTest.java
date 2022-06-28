@@ -17,12 +17,11 @@ import com.simformsolutions.appointment.repository.DoctorRepository;
 import com.simformsolutions.appointment.repository.ScheduleRepository;
 import com.simformsolutions.appointment.repository.UserRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.persistence.Tuple;
@@ -35,9 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.mock;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
     static final UserDetailsDto USER_DETAILS_DTO = new UserDetailsDto("Mohit D", "mohit@gmail.com", "0123456789", "password");
@@ -46,31 +46,18 @@ class UserServiceTest {
     static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO2 = new AppointmentDoctorDto(2, 1, "Ravi D", 2, "ayurveda", LocalTime.now(), LocalDate.now(), "BOOKED");
     static final List<AppointmentDoctorDto> APPOINTMENT_DOCTOR_DTOS = new ArrayList<>(Arrays.asList(APPOINTMENT_DOCTOR_DTO1, APPOINTMENT_DOCTOR_DTO2));
 
-    @MockBean
-    private ModelMapper modelMapper;
+    private final UserRepository userRepository = mock(UserRepository.class);
+    private final ModelMapper modelMapper= mock(ModelMapper.class);
 
-    @MockBean
-    private UserRepository userRepository;
+    private final AppointmentRepository appointmentRepository = mock(AppointmentRepository.class);
+    private final DoctorRepository doctorRepository = mock(DoctorRepository.class);
 
-    @MockBean
-    private AppointmentRepository appointmentRepository;
-    @MockBean
-    private DoctorRepository doctorRepository;
+    private final ScheduleRepository scheduleRepository = mock(ScheduleRepository.class);
 
-    @MockBean
-    private ScheduleRepository scheduleRepository;
+    private final AppointmentDoctorDtoConverter appointmentDoctorDtoConverter = mock(AppointmentDoctorDtoConverter.class);
 
-    @MockBean
-    private AppointmentDoctorDtoConverter appointmentDoctorDtoConverter;
-
-    @Autowired
-    private UserService userService;
-
-    @MockBean
-    private AppointmentService appointmentService;
-
-    UserServiceTest() {
-    }
+    private final AppointmentService appointmentService = mock(AppointmentService.class);
+    UserService userService = new UserService(userRepository,doctorRepository,appointmentService,appointmentDoctorDtoConverter,appointmentRepository,scheduleRepository,modelMapper);
 
     @Test
     void addUserSuccess() {
@@ -207,8 +194,8 @@ class UserServiceTest {
     }
 
     private List<Tuple> getListTuple() {
-        Tuple mockedTuple1 = Mockito.mock(Tuple.class);
-        Tuple mockedTuple2 = Mockito.mock(Tuple.class);
+        Tuple mockedTuple1 = mock(Tuple.class);
+        Tuple mockedTuple2 = mock(Tuple.class);
         List<Tuple> tuples = new ArrayList<>();
         tuples.add(0, mockedTuple1);
         tuples.add(1, mockedTuple2);

@@ -10,13 +10,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Table(name = "doctors")
 public class Doctor {
 
     @Id

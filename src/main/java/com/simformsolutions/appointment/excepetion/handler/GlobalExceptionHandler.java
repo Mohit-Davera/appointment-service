@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 @RestControllerAdvice
-@SuppressWarnings("unused")
 public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -5,6 +5,7 @@ import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
 import com.simformsolutions.appointment.dto.appointment.AppointmentDetailsDto;
 import com.simformsolutions.appointment.dto.user.UserDetailsDto;
 import com.simformsolutions.appointment.enums.AppointmentStatus;
+import com.simformsolutions.appointment.enums.Provider;
 import com.simformsolutions.appointment.excepetion.NoAppointmentFoundException;
 import com.simformsolutions.appointment.excepetion.ScheduleNotFoundException;
 import com.simformsolutions.appointment.excepetion.StatusChangeException;
@@ -41,13 +42,13 @@ public class UserService {
 
     private final ModelMapper modelMapper;
 
-    public UserService(UserRepository userRepository, AppointmentService appointmentService, AppointmentDoctorDtoConverter appointmentDoctorDtoConverter, AppointmentRepository appointmentRepository, ScheduleRepository scheduleRepository, DoctorRepository doctorRepository, ModelMapper modelMapper) {
+    public UserService(UserRepository userRepository, DoctorRepository doctorRepository, AppointmentService appointmentService, AppointmentDoctorDtoConverter appointmentDoctorDtoConverter, AppointmentRepository appointmentRepository, ScheduleRepository scheduleRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.doctorRepository = doctorRepository;
         this.appointmentService = appointmentService;
         this.appointmentDoctorDtoConverter = appointmentDoctorDtoConverter;
         this.appointmentRepository = appointmentRepository;
         this.scheduleRepository = scheduleRepository;
-        this.doctorRepository = doctorRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -134,6 +135,20 @@ public class UserService {
             return appointmentDoctorDto;
         } else {
             throw new ScheduleNotFoundException();
+        }
+
+    }
+
+    public void processOAuthPostLogin(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setProvider(Provider.GOOGLE);
+            newUser.setEnabled(true);
+
+            userRepository.save(newUser);
         }
 
     }
