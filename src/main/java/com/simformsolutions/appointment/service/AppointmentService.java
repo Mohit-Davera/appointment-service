@@ -1,6 +1,7 @@
 package com.simformsolutions.appointment.service;
 
 import com.simformsolutions.appointment.converter.AppointmentDoctorDtoConverter;
+import com.simformsolutions.appointment.converter.CustomAppointmentDoctorDtoConverter;
 import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
 import com.simformsolutions.appointment.dto.appointment.AppointmentDetailsDto;
 import com.simformsolutions.appointment.enums.AppointmentStatus;
@@ -12,6 +13,7 @@ import com.simformsolutions.appointment.model.User;
 import com.simformsolutions.appointment.projection.DoctorView;
 import com.simformsolutions.appointment.repository.*;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,6 +39,8 @@ public class AppointmentService {
     private final SpecialityRepository specialityRepository;
     private final AppointmentRepository appointmentRepository;
 
+    @Autowired
+    private CustomAppointmentDoctorDtoConverter customAppointmentDoctorDtoConverter;
     private final ModelMapper modelMapper;
 
     public AppointmentService(ScheduleRepository scheduleRepository, DoctorRepository doctorRepository, UserRepository userRepository, AppointmentDoctorDtoConverter appointmentDoctorDtoConverter, SpecialityRepository specialityRepository, AppointmentRepository appointmentRepository, ModelMapper modelMapper) {
@@ -153,5 +157,9 @@ public class AppointmentService {
             }
         }
         return doctorFreeAfterAppointments;
+    }
+
+    public List<AppointmentDoctorDto> customConverterTesting(int userId){
+        return appointmentRepository.findDetailsOfAppointments(userId).stream().map(customAppointmentDoctorDtoConverter::convert).toList();
     }
 }
