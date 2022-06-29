@@ -44,7 +44,7 @@ public class DoctorDetailsDto {
     private int experience;
 
     @NotNull(message = "Please Enter Speciality")
-    private String specialist;
+    private String speciality;
 
     @NotNull(message = "Please Enter Entry Time")
     private LocalTime entryTime;

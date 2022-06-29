@@ -17,10 +17,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.LocalDate;
-import java.time.LocalTime;   
-import java.time.format.DateTimeFormatter;
-
+import static com.simformsolutions.appointment.constants.AppointmentDetailsConstants.*;
+import static com.simformsolutions.appointment.constants.AppointmentDoctorDetailsConstants.*;
+import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.*;
+import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY1;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,8 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AppointmentControllerTest {
 
     static final String BASE_URL = "/appointment";
-    static final AppointmentDetailsDto APPOINTMENT_DETAILS_DTO = new AppointmentDetailsDto("ayurveda", "random issue", LocalDate.parse("17/12/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy")), "random user");
-    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO = new AppointmentDoctorDto(1, 1, "Ravi D", 1, "ayurveda", LocalTime.parse("10:00", DateTimeFormatter.ofPattern("HH:mm")), LocalDate.parse("17/12/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy")), "BOOKED");
+    static final AppointmentDetailsDto APPOINTMENT_DETAILS_DTO = new AppointmentDetailsDto(SPECIALITY1, ISSUE, APPOINTMENT_DATE, PATIENT_NAME);
+    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO = new AppointmentDoctorDto(APPOINTMENT_ID, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     ObjectWriter objectWriter = objectMapper.writer();
     @MockBean

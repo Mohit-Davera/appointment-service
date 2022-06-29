@@ -12,11 +12,11 @@ import java.util.List;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
 
-    @Query(value = "SELECT a.appointment_id, d.doctor_id as doctorId,d.first_name as firstName, d.last_name as lastName, d.experience as experience, a.speciality as specialist, a.end_time as bookingTime, a.date as bookingDate, a.status as status FROM appointments a JOIN doctors d ON d.doctor_id=a.doctor_id WHERE a.user_id = :userId"
+    @Query(value = "SELECT a.appointment_id, d.doctor_id as doctorId,d.first_name as firstName, d.last_name as lastName, d.experience as experience, a.speciality as speciality, a.end_time as bookingTime, a.date as bookingDate, a.status as status FROM appointments a JOIN doctors d ON d.doctor_id=a.doctor_id WHERE a.user_id = :userId"
             , nativeQuery = true)
     List<Tuple> findDetailsOfAppointments(@Param("userId") int userId);
 
-    @Query(value = "SELECT a.appointment_id, d.doctor_id as doctorId,d.first_name as firstName, d.last_name as lastName, d.experience as experience, a.speciality as specialist, a.end_time as bookingTime, a.date as bookingDate, a.status as status FROM appointments a JOIN doctors d ON d.doctor_id=a.doctor_id WHERE a.appointment_id = :appointmentId"
+    @Query(value = "SELECT a.appointment_id, d.doctor_id as doctorId,d.first_name as firstName, d.last_name as lastName, d.experience as experience, a.speciality as speciality, a.end_time as bookingTime, a.date as bookingDate, a.status as status FROM appointments a JOIN doctors d ON d.doctor_id=a.doctor_id WHERE a.appointment_id = :appointmentId"
             , nativeQuery = true)
     List<Tuple> findDetailsOfAppointment(@Param("appointmentId") int appointmentId);
 

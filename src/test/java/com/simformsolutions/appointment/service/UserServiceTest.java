@@ -4,7 +4,6 @@ import com.simformsolutions.appointment.converter.AppointmentDoctorDtoConverter;
 import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
 import com.simformsolutions.appointment.dto.appointment.AppointmentDetailsDto;
 import com.simformsolutions.appointment.dto.user.UserDetailsDto;
-import com.simformsolutions.appointment.enums.AppointmentStatus;
 import com.simformsolutions.appointment.excepetion.NoAppointmentFoundException;
 import com.simformsolutions.appointment.excepetion.ScheduleNotFoundException;
 import com.simformsolutions.appointment.excepetion.StatusChangeException;
@@ -27,9 +26,16 @@ import org.springframework.dao.DataIntegrityViolationException;
 import javax.persistence.Tuple;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.simformsolutions.appointment.constants.AppointmentDetailsConstants.*;
+import static com.simformsolutions.appointment.constants.AppointmentDoctorDetailsConstants.*;
+import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.DOCTOR_ID;
+import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.EXPERIENCE;
+import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY1;
+import static com.simformsolutions.appointment.constants.UserDetailsConstants.*;
+import static com.simformsolutions.appointment.enums.AppointmentStatus.AVAILABLE;
+import static com.simformsolutions.appointment.enums.AppointmentStatus.CANCELLED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,10 +46,10 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    static final UserDetailsDto USER_DETAILS_DTO = new UserDetailsDto("Mohit D", "mohit@gmail.com", "0123456789", "password");
-    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO1 = new AppointmentDoctorDto(1, 1, "Ravi D", 2, "ayurveda", LocalTime.now(), LocalDate.now(), "BOOKED");
-    static final AppointmentDetailsDto APPOINTMENT_DETAILS_DTO = new AppointmentDetailsDto("ayurveda", "random issue", LocalDate.now(), "random user");
-    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO2 = new AppointmentDoctorDto(2, 1, "Ravi D", 2, "ayurveda", LocalTime.now(), LocalDate.now(), "BOOKED");
+    static final UserDetailsDto USER_DETAILS_DTO = new UserDetailsDto(NAME, EMAIL, NUMBER, PASSWORD);
+    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO1 = new AppointmentDoctorDto(APPOINTMENT_ID, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
+    static final AppointmentDetailsDto APPOINTMENT_DETAILS_DTO = new AppointmentDetailsDto(SPECIALITY1, ISSUE, APPOINTMENT_DATE, PATIENT_NAME);
+    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO2 = new AppointmentDoctorDto(APPOINTMENT_ID2, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
     static final List<AppointmentDoctorDto> APPOINTMENT_DOCTOR_DTOS = new ArrayList<>(Arrays.asList(APPOINTMENT_DOCTOR_DTO1, APPOINTMENT_DOCTOR_DTO2));
 
     private final UserRepository userRepository = mock(UserRepository.class);
@@ -179,18 +185,18 @@ class UserServiceTest {
         assertEquals(APPOINTMENT_DOCTOR_DTO1,userService.changeDoctor(APPOINTMENT_DOCTOR_DTO1,1));
     }
 
-    private UserDetailsDto getUserDetailsDto(boolean withId) {
-        if (withId) {
+    private UserDetailsDto getUserDetailsDto(boolean hasId) {
+        if (hasId) {
             USER_DETAILS_DTO.setUserId(1);
             return USER_DETAILS_DTO;
         }
         return USER_DETAILS_DTO;
     }
 
-    private User getUserDetails(boolean withId) {
-        if (withId)
-            return new User(1, "Mohit D", "mohit@gmail.com", "0123456789", "password");
-        return new User("Mohit D", "mohit@gmail.com", "0123456789", "password");
+    private User getUserDetails(boolean hasId) {
+        if (hasId)
+            return new User(USER_ID, NAME, EMAIL, NUMBER, PASSWORD);
+        return new User(NAME, EMAIL, NUMBER, PASSWORD);
     }
 
     private List<Tuple> getListTuple() {
@@ -202,32 +208,32 @@ class UserServiceTest {
         return tuples;
     }
 
-    private Optional<Appointment> getOptionalAppointment(boolean isNull, boolean isCancelled, boolean afterCurrentTime, boolean withId) {
-        if (isNull) {
+    private Optional<Appointment> getOptionalAppointment(boolean isEmpty, boolean isCancelled, boolean isAfterCurrentTime, boolean hasId) {
+        if (isEmpty) {
             return Optional.empty();
         }
-        Optional<Appointment> optionalAppointment = Optional.of(new Appointment(1, "ayurveda", LocalTime.parse("10:00", DateTimeFormatter.ofPattern("HH:mm"))
-                , LocalDate.parse("17/12/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy")), "random patient", "random issue", AppointmentStatus.AVAILABLE));
-        if (withId)
+        Optional<Appointment> optionalAppointment = Optional.of(new Appointment(APPOINTMENT_ID, SPECIALITY1, BOOKING_TIME
+                , BOOKING_DATE, PATIENT_NAME, ISSUE, AVAILABLE));
+        if (hasId)
             optionalAppointment.orElse(null).setAppointmentId(1);
-        if (afterCurrentTime) {
+        if (isAfterCurrentTime) {
             if (isCancelled) {
-                optionalAppointment.orElse(null).setStatus(AppointmentStatus.CANCELLED);
+                optionalAppointment.orElse(null).setStatus(CANCELLED);
                 optionalAppointment.orElse(null).setEndTime(LocalTime.now().plusHours(1));
             } else
                 optionalAppointment.orElse(null).setEndTime(LocalTime.now().plusHours(1));
         }
         if (isCancelled)
-            optionalAppointment.orElse(null).setStatus(AppointmentStatus.CANCELLED);
+            optionalAppointment.orElse(null).setStatus(CANCELLED);
         return optionalAppointment;
     }
 
-    private Optional<Schedule> getOptionalSchedule(boolean isNull, boolean withId) {
-        if (isNull) {
+    private Optional<Schedule> getOptionalSchedule(boolean isEmpty, boolean hasId) {
+        if (isEmpty) {
             return Optional.empty();
         }
         Optional<Schedule> optionalSchedule = Optional.of(new Schedule(LocalTime.now(), LocalDate.now(), getOptionalDoctor().orElse(null), getOptionalUser().orElse(null), getOptionalAppointment(false, false, true, true).orElse(null)));
-        if (withId)
+        if (hasId)
             optionalSchedule.orElse(null).setId(1);
         optionalSchedule.orElse(null).setAppointment(new Appointment(1));
         return optionalSchedule;

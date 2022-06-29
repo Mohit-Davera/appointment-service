@@ -18,13 +18,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.simformsolutions.appointment.constants.AppointmentDoctorDetailsConstants.*;
+import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.DOCTOR_ID;
+import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.EXPERIENCE;
+import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY1;
+import static com.simformsolutions.appointment.constants.UserDetailsConstants.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,10 +35,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
     static final String BASE_URL = "/user";
-    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO1 = new AppointmentDoctorDto(1, 1, "Ravi D", 1, "ayurveda", LocalTime.parse("10:00", DateTimeFormatter.ofPattern("HH:mm")), LocalDate.parse("17/12/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy")), "BOOKED");
-    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO2 = new AppointmentDoctorDto(2, 1, "Ravi D", 1, "ayurveda", LocalTime.parse("11:00", DateTimeFormatter.ofPattern("HH:mm")), LocalDate.parse("18/12/2022", DateTimeFormatter.ofPattern("dd/MM/yyyy")), "BOOKED");
+    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO1 = new AppointmentDoctorDto(APPOINTMENT_ID, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
+    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO2 = new AppointmentDoctorDto(APPOINTMENT_ID2, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
     static final List<AppointmentDoctorDto> APPOINTMENT_DOCTOR_DTOS = new ArrayList<>(Arrays.asList(APPOINTMENT_DOCTOR_DTO1, APPOINTMENT_DOCTOR_DTO2));
-    static final UserDetailsDto USER_DETAILS_DTO = new UserDetailsDto("Monit D", "mohit@gmail.com", "0123456789", "password");
+    static final UserDetailsDto USER_DETAILS_DTO = new UserDetailsDto(NAME, EMAIL, NUMBER, PASSWORD);
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     ObjectWriter objectWriter = objectMapper.writer();
     @Autowired

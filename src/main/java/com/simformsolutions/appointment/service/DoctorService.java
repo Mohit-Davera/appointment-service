@@ -24,7 +24,7 @@ public class DoctorService {
     public DoctorDetailsDto saveDoctor(DoctorDetailsDto doctorDetailsDto) {
 
         Doctor doctor = modelMapper.map(doctorDetailsDto, Doctor.class);
-        Speciality s = specialityRepository.findByTitle(doctor.getSpecialist());
+        Speciality s = specialityRepository.findByTitle(doctor.getSpeciality());
         s.setDoctor(doctor);
         doctorDetailsDto.setDoctorId(specialityRepository.save(s).retrieveLastDoctor().getDoctorId());
         return doctorDetailsDto;

@@ -10,13 +10,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.*;
+import static com.simformsolutions.appointment.constants.SpecialityConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -24,11 +24,11 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class SpecialityServiceTest {
 
-    static final Doctor DOCTOR_WITHOUT_ID = new Doctor(0, "Mohit", "D", "9409598787", "davera@gmail.com", "rajkot", "BE", "GEC", 2, "ayurveda",
-            LocalTime.parse("10:00", DateTimeFormatter.ofPattern("HH:mm")),
-            LocalTime.parse("21:00", DateTimeFormatter.ofPattern("HH:mm")), null);
+    static final Doctor DOCTOR_WITHOUT_ID = new Doctor(0, FIRST_NAME, LAST_NAME, PHONE_NUMBER, EMAIL, CITY, DEGREE, COLLEGE_NAME, EXPERIENCE, SPECIALITY1,
+            ENTRY_TIME,
+            EXIT_TIME, null);
 
-    static final SpecialityTitleDto SPECIALITY_TITLE_DTO = new SpecialityTitleDto(new ArrayList<>(Arrays.asList("ayurveda", "dental surgeon", "cardiologist")));
+    static final SpecialityTitleDto SPECIALITY_TITLE_DTO = new SpecialityTitleDto(new ArrayList<>(Arrays.asList(SPECIALITY1,SPECIALITY2,SPECIALITY3)));
 
     private final SpecialityRepository specialityRepository = mock(SpecialityRepository.class);
     private final SpecialityService specialityService = new SpecialityService(specialityRepository);
@@ -43,17 +43,17 @@ class SpecialityServiceTest {
     @Test
     void saveNewSpecialitiesSuccess() {
         Mockito.when(specialityRepository.saveAll(getSpecialities(false))).thenReturn(getSpecialities(true));
-        assertEquals(getSpecialities(true).stream().map(Speciality::getTitle).collect(Collectors.toList()), specialityService.saveNewSpecialities(Arrays.asList("ayurveda", "dental surgeon", "cardiologist")).getTitles());
+        assertEquals(getSpecialities(true).stream().map(Speciality::getTitle).collect(Collectors.toList()), specialityService.saveNewSpecialities(Arrays.asList(SPECIALITY1,SPECIALITY2,SPECIALITY3)).getTitles());
 
     }
 
-    List<Speciality> getSpecialities(boolean withId) {
+    List<Speciality> getSpecialities(boolean hasId) {
 
 
-        Speciality speciality1 = new Speciality(0, "ayurveda", new ArrayList<>(List.of(DOCTOR_WITHOUT_ID)));
-        Speciality speciality2 = new Speciality(0, "dental surgeon", new ArrayList<>(List.of(DOCTOR_WITHOUT_ID)));
-        Speciality speciality3 = new Speciality(0, "cardiologist", new ArrayList<>(List.of(DOCTOR_WITHOUT_ID)));
-        if (withId) {
+        Speciality speciality1 = new Speciality(0, SPECIALITY1, new ArrayList<>(List.of(DOCTOR_WITHOUT_ID)));
+        Speciality speciality2 = new Speciality(0, SPECIALITY2, new ArrayList<>(List.of(DOCTOR_WITHOUT_ID)));
+        Speciality speciality3 = new Speciality(0, SPECIALITY3, new ArrayList<>(List.of(DOCTOR_WITHOUT_ID)));
+        if (hasId) {
             speciality1.setSpecialityId(1);
             speciality2.setSpecialityId(2);
             speciality3.setSpecialityId(3);

@@ -59,7 +59,7 @@ public class AppointmentService {
 
         if (!freeDoctors.isEmpty()) doctors.removeAll(freeDoctors);
         if (!doctors.isEmpty()) {
-            availableDoctors.addAll(checkTimingsOfDoctors(userAppointment,doctors));
+            availableDoctors.addAll(checkTimingsOfDoctors(userAppointment, doctors));
         }
         if (availableDoctors.isEmpty()) throw new NoDoctorAvailableExcepetion();
         availableDoctors.sort(Comparator.comparingInt(AppointmentDoctorDto::retrieveBookingTimeInHour));
@@ -74,9 +74,13 @@ public class AppointmentService {
 
         String title = appointment.getSpeciality().toLowerCase();
         if (!specialityRepository.existsByTitle(title)) throw new SpecialityException();
+
         List<DoctorView> doctorViewList = doctorRepository.findDoctorsIdWithSpeciality(specialityRepository.findByTitle(title).getSpecialityId());
+
         if (doctorViewList.isEmpty()) throw new NoSpecialistFoundException();
+
         List<Doctor> doctors = doctorViewList.stream().map(DoctorView::getDoctorId).map(doctorRepository::findById).filter(Optional::isPresent).map(Optional::get).toList();
+
         AppointmentDoctorDto appointmentDoctorDto = checkSchedule(new ArrayList<>(doctors), appointment).get(0);
         Optional<Doctor> d = doctorRepository.findById(appointmentDoctorDto.getDoctorId());
 
@@ -118,7 +122,7 @@ public class AppointmentService {
         return currentTime;
     }
 
-    private List<AppointmentDoctorDto> checkTimingsOfDoctors(Appointment userAppointment , List<Doctor> doctors){
+    private List<AppointmentDoctorDto> checkTimingsOfDoctors(Appointment userAppointment, List<Doctor> doctors) {
 
         AppointmentDoctorDto appointmentDoctorDto;
         LocalTime doctorBookedTillTime;

@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Arrays;
-
+import static com.simformsolutions.appointment.constants.SpecialityConstants.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SpecialityControllerTest {
 
     static final String BASE_URL = "/speciality";
-    static final SpecialityTitleDto SPECIALITY_TITLE_DTO = new SpecialityTitleDto(Arrays.asList("ayurveda", "dental surgeon", "orthopedist"));
+    static final SpecialityTitleDto SPECIALITY_TITLE_DTO = new SpecialityTitleDto(Arrays.asList(SPECIALITY1, SPECIALITY2, SPECIALITY3));
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     ObjectWriter objectWriter = objectMapper.writer();
     @MockBean

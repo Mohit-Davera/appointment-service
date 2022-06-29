@@ -16,9 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
+import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.*;
+import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY1;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,9 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class DoctorControllerTest {
 
     static final String BASE_URL = "/doctor";
-    static final DoctorDetailsDto DOCTOR_DETAILS_DTO = new DoctorDetailsDto(1, "Mohit", "Davera", "9409598787", "davera@gmail.com", "rajkot", "BE", "GEC", 2, "ayurveda",
-            LocalTime.parse("10:00", DateTimeFormatter.ofPattern("HH:mm")),
-            LocalTime.parse("21:00", DateTimeFormatter.ofPattern("HH:mm")));
+    static final DoctorDetailsDto DOCTOR_DETAILS_DTO = new DoctorDetailsDto(DOCTOR_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, EMAIL, CITY, DEGREE, COLLEGE_NAME, EXPERIENCE, SPECIALITY1,
+            ENTRY_TIME,
+            EXIT_TIME);
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     ObjectWriter objectWriter = objectMapper.writer();
     @MockBean

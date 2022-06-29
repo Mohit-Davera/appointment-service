@@ -10,9 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Entity
@@ -45,7 +43,7 @@ public class Doctor {
     private int experience;
 
     @Transient
-    private String specialist;
+    private String speciality;
 
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime entryTime;
