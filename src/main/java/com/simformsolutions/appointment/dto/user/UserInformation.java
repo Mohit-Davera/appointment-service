@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class UserDetailsDto {
+public class UserInformation {
 
     private int userId;
     @Size(min = 5, message = "Please Enter Appropriate Name")
@@ -29,7 +29,7 @@ public class UserDetailsDto {
     @NotEmpty(message = "Please Enter Password")
     private String password;
 
-    public UserDetailsDto(String name, String email, String number, String password) {
+    public UserInformation(String name, String email, String number, String password) {
         this.name = name;
         this.email = email;
         this.number = number;

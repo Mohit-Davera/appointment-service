@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
-import com.simformsolutions.appointment.dto.appointment.AppointmentDetailsDto;
+import com.simformsolutions.appointment.dto.AppointmentDoctor;
+import com.simformsolutions.appointment.dto.appointment.AppointmentDetails;
 import com.simformsolutions.appointment.service.AppointmentService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,8 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AppointmentControllerTest {
 
     static final String BASE_URL = "/appointment";
-    static final AppointmentDetailsDto APPOINTMENT_DETAILS_DTO = new AppointmentDetailsDto(SPECIALITY1, ISSUE, APPOINTMENT_DATE, PATIENT_NAME);
-    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO = new AppointmentDoctorDto(APPOINTMENT_ID, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
+    static final AppointmentDetails APPOINTMENT_DETAILS_DTO = new AppointmentDetails(SPECIALITY1, ISSUE, APPOINTMENT_DATE, PATIENT_NAME);
+    static final AppointmentDoctor APPOINTMENT_DOCTOR_DTO = new AppointmentDoctor(APPOINTMENT_ID1, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     ObjectWriter objectWriter = objectMapper.writer();
     @MockBean
@@ -41,9 +41,7 @@ class AppointmentControllerTest {
     @Test
     void bookAppointmentSuccess() throws Exception {
         String content = objectWriter.writeValueAsString(APPOINTMENT_DETAILS_DTO);
-
         Mockito.when(appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1)).thenReturn(APPOINTMENT_DOCTOR_DTO);
-
         mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL + "/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)

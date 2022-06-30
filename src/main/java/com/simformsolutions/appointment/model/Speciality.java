@@ -30,6 +30,11 @@ public class Speciality {
         this.title = title.toLowerCase();
     }
 
+    public Speciality(String title, List<Doctor> doctors) {
+        this.title = title;
+        this.doctors = doctors;
+    }
+
     public void setDoctor(Doctor d) {
         doctors.add(d);
     }

@@ -1,6 +1,6 @@
 package com.simformsolutions.appointment.controller;
 
-import com.simformsolutions.appointment.dto.speciality.SpecialityTitleDto;
+import com.simformsolutions.appointment.dto.speciality.SpecialityTitle;
 import com.simformsolutions.appointment.service.SpecialityService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +16,13 @@ public class SpecialityController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<SpecialityTitleDto> showSpecialities(){
-        return new Responder<SpecialityTitleDto>().apply(specialityService.showSpecialities());
+    public ResponseEntity<SpecialityTitle> showSpecialities() {
+        return new Responder<SpecialityTitle>().apply(specialityService.showSpecialities());
 
     }
 
     @PostMapping("/")
-    public ResponseEntity<SpecialityTitleDto> addSpecialities(@RequestBody SpecialityTitleDto specialityTitleDto){
-        return new Responder<SpecialityTitleDto>().apply(specialityService.saveNewSpecialities(specialityTitleDto.getTitles()));
+    public ResponseEntity<SpecialityTitle> addSpecialities(@RequestBody SpecialityTitle specialityTitle) {
+        return new Responder<SpecialityTitle>().apply(specialityService.saveNewSpecialities(specialityTitle.getTitles()));
     }
 }

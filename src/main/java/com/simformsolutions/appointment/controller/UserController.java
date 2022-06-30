@@ -1,7 +1,7 @@
 package com.simformsolutions.appointment.controller;
 
-import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
-import com.simformsolutions.appointment.dto.user.UserDetailsDto;
+import com.simformsolutions.appointment.dto.AppointmentDoctor;
+import com.simformsolutions.appointment.dto.user.UserInformation;
 import com.simformsolutions.appointment.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,32 +20,32 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public UserDetailsDto registerUser(@Valid @RequestBody UserDetailsDto userDetailsDto) {
-        return userService.addUser(userDetailsDto);
+    public UserInformation registerUser(@Valid @RequestBody UserInformation userInformation) {
+        return userService.addUser(userInformation);
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<AppointmentDoctorDto>> showAppointments(@RequestParam int userId) {
-        return new Responder<List<AppointmentDoctorDto>>().apply(userService.getAppointments(userId));
+    public ResponseEntity<List<AppointmentDoctor>> showAppointments(@RequestParam int userId) {
+        return new Responder<List<AppointmentDoctor>>().apply(userService.getAppointments(userId));
     }
 
     @PostMapping("/{appointmentId}/cancel")
-    public ResponseEntity<AppointmentDoctorDto> cancelAppointment(@PathVariable("appointmentId") int appointmentId, @RequestParam int userId) {
-        return new Responder<AppointmentDoctorDto>().apply(userService.cancelAppointment(appointmentId));
+    public ResponseEntity<AppointmentDoctor> cancelAppointment(@PathVariable("appointmentId") int appointmentId, @RequestParam int userId) {
+        return new Responder<AppointmentDoctor>().apply(userService.cancelAppointment(appointmentId));
     }
 
     @PostMapping("/{appointmentId}/reschedule")
-    public ResponseEntity<AppointmentDoctorDto> rescheduleAppointment(@PathVariable("appointmentId") int appointmentId, @RequestParam int userId, @RequestParam(value = "days", required = false, defaultValue = "0") String days) {
-        return new Responder<AppointmentDoctorDto>().apply(userService.rescheduleAppointment(appointmentId, userId, days));
+    public ResponseEntity<AppointmentDoctor> rescheduleAppointment(@PathVariable("appointmentId") int appointmentId, @RequestParam int userId, @RequestParam(value = "days", required = false, defaultValue = "0") String days) {
+        return new Responder<AppointmentDoctor>().apply(userService.rescheduleAppointment(appointmentId, userId, days));
     }
 
     @GetMapping("/{appointmentId}/doctors")
-    public ResponseEntity<List<AppointmentDoctorDto>> availableDoctors(@PathVariable("appointmentId") int appointmentId, @RequestParam int userId) {
-        return new Responder<List<AppointmentDoctorDto>>().apply(userService.getAvailableDoctors(appointmentId, userId));
+    public ResponseEntity<List<AppointmentDoctor>> availableDoctors(@PathVariable("appointmentId") int appointmentId, @RequestParam int userId) {
+        return new Responder<List<AppointmentDoctor>>().apply(userService.getAvailableDoctors(appointmentId, userId));
     }
 
     @PostMapping("/change-doctor")
-    public ResponseEntity<AppointmentDoctorDto> changeDoctor(@RequestBody AppointmentDoctorDto appointmentDoctorDto, @RequestParam("userId") int userId) {
-        return new Responder<AppointmentDoctorDto>().apply(userService.changeDoctor(appointmentDoctorDto, userId));
+    public ResponseEntity<AppointmentDoctor> changeDoctor(@RequestBody AppointmentDoctor appointmentDoctor, @RequestParam("userId") int userId) {
+        return new Responder<AppointmentDoctor>().apply(userService.changeDoctor(appointmentDoctor, userId));
     }
 }

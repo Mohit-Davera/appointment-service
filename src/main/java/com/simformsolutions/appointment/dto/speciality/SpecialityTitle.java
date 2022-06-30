@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class SpecialityTitleDto {
+public class SpecialityTitle {
     List<String> titles;
 }

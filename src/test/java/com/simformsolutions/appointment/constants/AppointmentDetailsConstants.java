@@ -1,7 +1,6 @@
 package com.simformsolutions.appointment.constants;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public final class AppointmentDetailsConstants {
     public static final String ISSUE = "fever";

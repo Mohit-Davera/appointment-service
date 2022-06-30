@@ -1,7 +1,7 @@
 package com.simformsolutions.appointment.controller;
 
-import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
-import com.simformsolutions.appointment.dto.appointment.AppointmentDetailsDto;
+import com.simformsolutions.appointment.dto.AppointmentDoctor;
+import com.simformsolutions.appointment.dto.appointment.AppointmentDetails;
 import com.simformsolutions.appointment.service.AppointmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +20,8 @@ public class AppointmentController {
     }
 
     @PostMapping("/book")
-    public ResponseEntity<AppointmentDoctorDto> bookAppointment(@Valid @RequestBody AppointmentDetailsDto appointmentDetailsDto, @RequestParam int userId) {
-        return new Responder<AppointmentDoctorDto>().apply(appointmentService.saveAppointment(appointmentDetailsDto, userId));
+    public ResponseEntity<AppointmentDoctor> bookAppointment(@Valid @RequestBody AppointmentDetails appointmentDetails, @RequestParam int userId) {
+        return new Responder<AppointmentDoctor>().apply(appointmentService.saveAppointment(appointmentDetails, userId));
 
     }
 }

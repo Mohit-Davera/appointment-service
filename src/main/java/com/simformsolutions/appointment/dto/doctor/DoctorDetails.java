@@ -7,12 +7,10 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.*;
 import java.time.LocalTime;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DoctorDetailsDto {
-
+public class DoctorDetails {
 
     private int doctorId;
 

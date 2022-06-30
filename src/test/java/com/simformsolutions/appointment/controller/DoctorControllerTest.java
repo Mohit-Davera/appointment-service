@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.simformsolutions.appointment.dto.doctor.DoctorDetailsDto;
+import com.simformsolutions.appointment.dto.doctor.DoctorDetails;
 import com.simformsolutions.appointment.service.DoctorService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class DoctorControllerTest {
 
     static final String BASE_URL = "/doctor";
-    static final DoctorDetailsDto DOCTOR_DETAILS_DTO = new DoctorDetailsDto(DOCTOR_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, EMAIL, CITY, DEGREE, COLLEGE_NAME, EXPERIENCE, SPECIALITY1,
+    static final DoctorDetails DOCTOR_DETAILS_DTO = new DoctorDetails(DOCTOR_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, EMAIL, CITY, DEGREE, COLLEGE_NAME, EXPERIENCE, SPECIALITY1,
             ENTRY_TIME,
             EXIT_TIME);
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -39,9 +39,7 @@ class DoctorControllerTest {
     @Test
     void registerDoctorSuccess() throws Exception {
         String content = objectWriter.writeValueAsString(DOCTOR_DETAILS_DTO);
-
         Mockito.when(doctorService.saveDoctor(DOCTOR_DETAILS_DTO)).thenReturn(DOCTOR_DETAILS_DTO);
-
         mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL + "/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)

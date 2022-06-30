@@ -1,11 +1,11 @@
 package com.simformsolutions.appointment.service;
 
 import com.simformsolutions.appointment.converter.AppointmentDoctorDtoConverter;
-import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
-import com.simformsolutions.appointment.dto.appointment.AppointmentDetailsDto;
+import com.simformsolutions.appointment.dto.AppointmentDoctor;
+import com.simformsolutions.appointment.dto.appointment.AppointmentDetails;
 import com.simformsolutions.appointment.enums.AppointmentStatus;
-import com.simformsolutions.appointment.excepetion.NoDoctorAvailableExcepetion;
-import com.simformsolutions.appointment.excepetion.NoSpecialistFoundException;
+import com.simformsolutions.appointment.excepetion.DoctorNotAvailableException;
+import com.simformsolutions.appointment.excepetion.SpecialistNotFoundException;
 import com.simformsolutions.appointment.excepetion.SpecialityException;
 import com.simformsolutions.appointment.excepetion.UserNotFoundException;
 import com.simformsolutions.appointment.model.*;
@@ -27,6 +27,8 @@ import static com.simformsolutions.appointment.constants.AppointmentDoctorDetail
 import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.DOCTOR_ID;
 import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.EXPERIENCE;
 import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY1;
+import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY_ID1;
+import static com.simformsolutions.appointment.constants.UserInfoConstants.USER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,91 +38,71 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class AppointmentServiceTest {
 
-    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO1 = new AppointmentDoctorDto(APPOINTMENT_ID, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
-    static final AppointmentDetailsDto APPOINTMENT_DETAILS_DTO = new AppointmentDetailsDto(SPECIALITY1, ISSUE, APPOINTMENT_DATE, PATIENT_NAME);
-
-    static final AppointmentDoctorDto APPOINTMENT_DOCTOR_DTO2 = new AppointmentDoctorDto(APPOINTMENT_ID2, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
-    static final List<AppointmentDoctorDto> APPOINTMENT_DOCTOR_DTOS = Arrays.asList(APPOINTMENT_DOCTOR_DTO1, APPOINTMENT_DOCTOR_DTO2);
-
     private final ModelMapper modelMapper = mock(ModelMapper.class);
-
-
     private final UserRepository userRepository = mock(UserRepository.class);
-
-
     private final AppointmentRepository appointmentRepository = mock(AppointmentRepository.class);
-
     private final DoctorRepository doctorRepository = mock(DoctorRepository.class);
-
-
     private final ScheduleRepository scheduleRepository = mock(ScheduleRepository.class);
-
-
     private final SpecialityRepository specialityRepository = mock(SpecialityRepository.class);
-
     private final AppointmentDoctorDtoConverter appointmentDoctorDtoConverter = mock(AppointmentDoctorDtoConverter.class);
-
     private final AppointmentService appointmentService = new AppointmentService(scheduleRepository, doctorRepository, userRepository, appointmentDoctorDtoConverter, specialityRepository, appointmentRepository, modelMapper);
-
+    AppointmentDoctor appointmentDoctor1 = new AppointmentDoctor(APPOINTMENT_ID1, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
+    AppointmentDetails appointmentDetails = new AppointmentDetails(SPECIALITY1, ISSUE, APPOINTMENT_DATE, PATIENT_NAME);
+    AppointmentDoctor appointmentDoctor2 = new AppointmentDoctor(APPOINTMENT_ID2, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
+    List<AppointmentDoctor> listOfAppointmentDoctors = Arrays.asList(appointmentDoctor1, appointmentDoctor2);
 
     @Test
     void saveAppointmentAppointmentFailure() {
-
         //Expected
-        Mockito.when(modelMapper.map(any(AppointmentDetailsDto.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
-        Mockito.when(userRepository.findById(1)).thenReturn(getNullOptionalUser());
-        assertThrows(UserNotFoundException.class, () -> appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1));
+        Mockito.when(modelMapper.map(any(AppointmentDetails.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
+        Mockito.when(userRepository.findById(USER_ID)).thenReturn(getNullOptionalUser());
+        assertThrows(UserNotFoundException.class, () -> appointmentService.saveAppointment(appointmentDetails, USER_ID));
     }
 
     @Test
     void saveAppointmentSpecialityFailure() {
-
         //Expected
-        Mockito.when(modelMapper.map(any(AppointmentDetailsDto.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
-        Mockito.when(userRepository.findById(1)).thenReturn(getOptionalUser());
+        Mockito.when(modelMapper.map(any(AppointmentDetails.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
+        Mockito.when(userRepository.findById(USER_ID)).thenReturn(getOptionalUser());
         Mockito.when(specialityRepository.existsByTitle(SPECIALITY1)).thenReturn(false);
-        assertThrows(SpecialityException.class, () -> appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1));
+        assertThrows(SpecialityException.class, () -> appointmentService.saveAppointment(appointmentDetails, USER_ID));
     }
 
     @Test
     void saveAppointmentSpecialistFailure() {
-
         //Expected
-        Mockito.when(modelMapper.map(any(AppointmentDetailsDto.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
-        Mockito.when(userRepository.findById(1)).thenReturn(getOptionalUser());
+        Mockito.when(modelMapper.map(any(AppointmentDetails.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
+        Mockito.when(userRepository.findById(USER_ID)).thenReturn(getOptionalUser());
         Mockito.when(specialityRepository.existsByTitle(SPECIALITY1)).thenReturn(true);
         Mockito.when(specialityRepository.findByTitle(SPECIALITY1)).thenReturn(new Speciality(1, SPECIALITY1, null));
-        Mockito.when(doctorRepository.findDoctorsIdWithSpeciality(1)).thenReturn(new ArrayList<>());
-        assertThrows(NoSpecialistFoundException.class, () -> appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1));
+        Mockito.when(doctorRepository.findDoctorsIdWithSpeciality(SPECIALITY_ID1)).thenReturn(new ArrayList<>());
+        assertThrows(SpecialistNotFoundException.class, () -> appointmentService.saveAppointment(appointmentDetails, USER_ID));
     }
 
     @Test
     void saveAppointmentDoctorFailure() {
-
         //Expected
-        Mockito.when(modelMapper.map(any(AppointmentDetailsDto.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
-        Mockito.when(userRepository.findById(1)).thenReturn(getOptionalUser());
+        Mockito.when(modelMapper.map(any(AppointmentDetails.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
+        Mockito.when(userRepository.findById(USER_ID)).thenReturn(getOptionalUser());
         Mockito.when(specialityRepository.existsByTitle(SPECIALITY1)).thenReturn(true);
-        Mockito.when(specialityRepository.findByTitle(SPECIALITY1)).thenReturn(new Speciality(1, SPECIALITY1, null));
-        Mockito.when(doctorRepository.findDoctorsIdWithSpeciality(1)).thenReturn(getDoctorView());
-        Mockito.when(doctorRepository.findById(1)).thenReturn(getNullOptionalDoctor());
-        assertThrows(NoDoctorAvailableExcepetion.class, () -> appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1));
+        Mockito.when(specialityRepository.findByTitle(SPECIALITY1)).thenReturn(new Speciality(SPECIALITY_ID1, SPECIALITY1, null));
+        Mockito.when(doctorRepository.findDoctorsIdWithSpeciality(SPECIALITY_ID1)).thenReturn(getDoctorView());
+        Mockito.when(doctorRepository.findById(SPECIALITY_ID1)).thenReturn(getNullOptionalDoctor());
+        assertThrows(DoctorNotAvailableException.class, () -> appointmentService.saveAppointment(appointmentDetails, USER_ID));
     }
-
 
     @Test
     void saveAppointmentSuccess() {
-
         //Expected
-        Mockito.when(modelMapper.map(any(AppointmentDetailsDto.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
-        Mockito.when(userRepository.findById(1)).thenReturn(getOptionalUser());
+        Mockito.when(modelMapper.map(any(AppointmentDetails.class), any())).thenReturn(getOptionalAppointment(false, false).orElse(null));
+        Mockito.when(userRepository.findById(USER_ID)).thenReturn(getOptionalUser());
         Mockito.when(specialityRepository.existsByTitle(SPECIALITY1)).thenReturn(true);
-        Mockito.when(specialityRepository.findByTitle(SPECIALITY1)).thenReturn(new Speciality(1, SPECIALITY1, new ArrayList<>(List.of(Objects.requireNonNull(getOptionalDoctor().orElse(null))))));
-        Mockito.when(doctorRepository.findDoctorsIdWithSpeciality(1)).thenReturn(getDoctorView());
-        Mockito.when(doctorRepository.findById(1)).thenReturn(getOptionalDoctor());
-        Mockito.when(appointmentDoctorDtoConverter.freeDoctorToBookedDoctorConverter(new ArrayList<>(List.of(Objects.requireNonNull(getOptionalDoctor().orElse(null)))), new Appointment(1), LocalTime.now())).thenReturn(APPOINTMENT_DOCTOR_DTOS);
+        Mockito.when(specialityRepository.findByTitle(SPECIALITY1)).thenReturn(new Speciality(SPECIALITY_ID1, SPECIALITY1, new ArrayList<>(List.of(Objects.requireNonNull(getOptionalDoctor().orElse(null))))));
+        Mockito.when(doctorRepository.findDoctorsIdWithSpeciality(SPECIALITY_ID1)).thenReturn(getDoctorView());
+        Mockito.when(doctorRepository.findById(DOCTOR_ID)).thenReturn(getOptionalDoctor());
+        Mockito.when(appointmentDoctorDtoConverter.freeDoctorToBookedDoctorConverter(new ArrayList<>(List.of(Objects.requireNonNull(getOptionalDoctor().orElse(null)))), new Appointment(APPOINTMENT_ID1), LocalTime.now())).thenReturn(listOfAppointmentDoctors);
         Mockito.when(scheduleRepository.save(any(Schedule.class))).thenReturn(getOptionalScheduleWithId().orElse(null));
-        assertEquals(APPOINTMENT_DOCTOR_DTO1.getAppointmentId(), appointmentService.saveAppointment(APPOINTMENT_DETAILS_DTO, 1).getAppointmentId());
+        assertEquals(appointmentDoctor1.getAppointmentId(), appointmentService.saveAppointment(appointmentDetails, USER_ID).getAppointmentId());
     }
 
     private List<DoctorView> getDoctorView() {
@@ -130,8 +112,8 @@ class AppointmentServiceTest {
     }
 
     private Optional<Appointment> getOptionalAppointment(boolean isAfterCurrentTime, boolean hasId) {
-        Optional<Appointment> optionalAppointment = Optional.of(new Appointment(1, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, PATIENT_NAME, ISSUE, AppointmentStatus.AVAILABLE));
-        if (hasId) optionalAppointment.orElse(null).setAppointmentId(1);
+        Optional<Appointment> optionalAppointment = Optional.of(new Appointment(APPOINTMENT_ID1, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, PATIENT_NAME, ISSUE, AppointmentStatus.AVAILABLE));
+        if (hasId) optionalAppointment.orElse(null).setAppointmentId(APPOINTMENT_ID1);
         optionalAppointment.orElse(null).setStatus(AppointmentStatus.CANCELLED);
         if (isAfterCurrentTime) {
             optionalAppointment.orElse(null).setEndTime(LocalTime.now().plusHours(1));
@@ -142,22 +124,22 @@ class AppointmentServiceTest {
     private Optional<Schedule> getOptionalScheduleWithId() {
         Optional<Schedule> optionalSchedule = Optional.of(new Schedule(LocalTime.now(), LocalDate.now(), getOptionalDoctor().orElse(null), getOptionalUser().orElse(null), getOptionalAppointment(true, true).orElse(null)));
         optionalSchedule.orElse(null).setId(1);
-        optionalSchedule.orElse(null).setAppointment(new Appointment(1));
+        optionalSchedule.orElse(null).setAppointment(new Appointment(APPOINTMENT_ID1));
         return optionalSchedule;
     }
 
     private Optional<Doctor> getOptionalDoctor() {
-        Doctor d = new Doctor();
-        d.setDoctorId(1);
-        d.setAppointments(new ArrayList<>(List.of(Objects.requireNonNull(getOptionalAppointment(false, true).orElse(null)))));
-        return Optional.of(d);
+        Doctor doctor = new Doctor();
+        doctor.setDoctorId(DOCTOR_ID);
+        doctor.setAppointments(new ArrayList<>(List.of(Objects.requireNonNull(getOptionalAppointment(false, true).orElse(null)))));
+        return Optional.of(doctor);
 
     }
 
     private Optional<User> getOptionalUser() {
-        User u = new User();
-        u.setAppointments(new ArrayList<>(List.of(Objects.requireNonNull(getOptionalAppointment(true, true).orElse(null)))));
-        return Optional.of(u);
+        User user = new User();
+        user.setAppointments(new ArrayList<>(List.of(Objects.requireNonNull(getOptionalAppointment(true, true).orElse(null)))));
+        return Optional.of(user);
     }
 
     private Optional<Doctor> getNullOptionalDoctor() {

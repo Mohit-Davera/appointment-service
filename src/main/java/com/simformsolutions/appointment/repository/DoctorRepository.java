@@ -21,5 +21,4 @@ public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
             , nativeQuery = true)
     List<Doctor> findDoctorsWithSpeciality(@Param("specialityId") int specialityId);
 
-
 }

@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppointmentDetailsDto {
+public class AppointmentDetails {
 
     @NotEmpty(message = "Enter Speciality ")
     private String speciality;

@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @Data
 @NoArgsConstructor
 @ToString
-public class AppointmentDoctorDto {
+public class AppointmentDoctor {
 
     private int appointmentId;
     private int doctorId;
@@ -26,7 +26,7 @@ public class AppointmentDoctorDto {
     private LocalDate bookedDate;
     private String status = AppointmentStatus.AVAILABLE.getLabel();
 
-    public AppointmentDoctorDto(int doctorId, String doctorName, int experience, String specialist, LocalTime bookingTime,LocalDate bookedDate ) {
+    public AppointmentDoctor(int doctorId, String doctorName, int experience, String specialist, LocalTime bookingTime, LocalDate bookedDate) {
         this.doctorId = doctorId;
         this.doctorName = "Dr. " + doctorName;
         this.experience = experience;
@@ -34,15 +34,8 @@ public class AppointmentDoctorDto {
         this.bookingTime = bookingTime;
         this.bookedDate = bookedDate;
     }
-    public AppointmentDoctorDto(int doctorId, String doctorName, int experience, String specialist,LocalDate bookedDate){
-        this.doctorId = doctorId;
-        this.doctorName = "Dr. " + doctorName;
-        this.experience = experience;
-        this.specialist = specialist;
-        this.bookedDate = bookedDate;
-    }
 
-    public AppointmentDoctorDto(int appointmentId, int doctorId, String doctorName, int experience, String specialist, LocalTime bookingTime, LocalDate bookedDate, String status) {
+    public AppointmentDoctor(int appointmentId, int doctorId, String doctorName, int experience, String specialist, LocalTime bookingTime, LocalDate bookedDate, String status) {
         this(doctorId, doctorName, experience, specialist, bookingTime, bookedDate);
         this.status = status;
         this.appointmentId = appointmentId;
