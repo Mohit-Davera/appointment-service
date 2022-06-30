@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "specialities")
 public class Speciality {
 
     @Id
@@ -27,6 +28,11 @@ public class Speciality {
 
     public Speciality(String title) {
         this.title = title.toLowerCase();
+    }
+
+    public Speciality(String title, List<Doctor> doctors) {
+        this.title = title;
+        this.doctors = doctors;
     }
 
     public void setDoctor(Doctor d) {

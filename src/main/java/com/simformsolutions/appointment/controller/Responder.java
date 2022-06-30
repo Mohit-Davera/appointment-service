@@ -11,7 +11,7 @@ public class Responder<T> {
     private static final Logger log = LoggerFactory.getLogger(Responder.class);
 
     public ResponseEntity<T> apply(T dto) {
-        log.info(dto.toString());
+        log.info("{}", dto);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }

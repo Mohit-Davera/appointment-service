@@ -17,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Table(name = "doctors")
 public class Doctor {
 
     @Id
@@ -42,7 +43,7 @@ public class Doctor {
     private int experience;
 
     @Transient
-    private String specialist;
+    private String speciality;
 
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime entryTime;

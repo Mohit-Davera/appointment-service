@@ -2,11 +2,11 @@ package com.simformsolutions.appointment.excepetion;
 
 import java.io.Serial;
 
-public class ScheduleNotFoundException extends RuntimeException {
+public class DoctorNotFoundException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public ScheduleNotFoundException(String message) {
+    public DoctorNotFoundException(String message) {
         super(message);
     }
 }

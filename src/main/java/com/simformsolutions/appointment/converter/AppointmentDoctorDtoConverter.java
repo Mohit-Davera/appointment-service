@@ -1,6 +1,6 @@
 package com.simformsolutions.appointment.converter;
 
-import com.simformsolutions.appointment.dto.AppointmentDoctorDto;
+import com.simformsolutions.appointment.dto.AppointmentDoctor;
 import com.simformsolutions.appointment.model.Appointment;
 import com.simformsolutions.appointment.model.Doctor;
 import org.springframework.stereotype.Component;
@@ -15,9 +15,9 @@ import java.util.List;
 
 @Component
 public class AppointmentDoctorDtoConverter {
-    public List<AppointmentDoctorDto> tuplesToAppointmentDoctorConverter(List<Tuple> tuple) {
+    public List<AppointmentDoctor> tuplesToAppointmentDoctorConverter(List<Tuple> tuple) {
         return tuple.stream()
-                .map(t -> new AppointmentDoctorDto(
+                .map(t -> new AppointmentDoctor(
                         t.get(0, Integer.class),
                         t.get(1, Integer.class),
                         t.get(2, String.class) + " " + t.get(3, String.class),
@@ -30,11 +30,11 @@ public class AppointmentDoctorDtoConverter {
                 .toList();
     }
 
-    public List<AppointmentDoctorDto> freeDoctorToBookedDoctorConverter(List<Doctor> doctors, Appointment userAppointment, LocalTime currentTime) {
-        List<AppointmentDoctorDto> bookedDoctors = new ArrayList<>();
+    public List<AppointmentDoctor> freeDoctorToBookedDoctorConverter(List<Doctor> doctors, Appointment userAppointment, LocalTime currentTime) {
+        List<AppointmentDoctor> bookedDoctors = new ArrayList<>();
         doctors.forEach(
                 d -> bookedDoctors.add(
-                        new AppointmentDoctorDto(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(),
+                        new AppointmentDoctor(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(),
                                 d.getExperience(),
                                 userAppointment.getSpeciality(),
                                 userAppointment.getDate().getDayOfMonth() <= LocalDate.now().getDayOfMonth() ? currentTime : d.getEntryTime(),

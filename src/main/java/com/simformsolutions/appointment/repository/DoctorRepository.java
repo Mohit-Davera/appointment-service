@@ -12,14 +12,13 @@ import java.util.List;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Integer> {
     @Query(value = "SELECT d.doctor_id as doctorId " +
-            "FROM doctor d WHERE d.speciality_id =:specialityId"
+            "FROM doctors d WHERE d.speciality_id =:specialityId"
             , nativeQuery = true)
     List<DoctorView> findDoctorsIdWithSpeciality(@Param("specialityId") int specialityId);
 
     @Query(value = "SELECT * " +
-            "FROM doctor d WHERE d.speciality_id =:specialityId"
+            "FROM doctors d WHERE d.speciality_id =:specialityId"
             , nativeQuery = true)
     List<Doctor> findDoctorsWithSpeciality(@Param("specialityId") int specialityId);
-
 
 }

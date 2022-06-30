@@ -18,6 +18,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Table(name = "appointments")
 public class Appointment {
 
     @Id

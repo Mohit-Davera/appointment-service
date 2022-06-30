@@ -1,6 +1,6 @@
 package com.simformsolutions.appointment.controller;
 
-import com.simformsolutions.appointment.dto.doctor.DoctorDetailsDto;
+import com.simformsolutions.appointment.dto.doctor.DoctorDetails;
 import com.simformsolutions.appointment.service.DoctorService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +20,8 @@ public class DoctorController {
     }
 
     @PostMapping("/")
-    public DoctorDetailsDto registerDoctor(@Valid @RequestBody DoctorDetailsDto doctorDetailsDto) {
-        return doctorService.saveDoctor(doctorDetailsDto);
+    public DoctorDetails registerDoctor(@Valid @RequestBody DoctorDetails doctorDetails) {
+        return doctorService.saveDoctor(doctorDetails);
     }
 
 }
