@@ -3,6 +3,7 @@ package com.simformsolutions.appointment.dto.doctor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.*;
 import java.time.LocalTime;
@@ -44,8 +45,11 @@ public class DoctorDetails {
     @NotNull(message = "Please Enter Speciality")
     private String speciality;
 
+    @DateTimeFormat(pattern = "HH:mm:ss")
     @NotNull(message = "Please Enter Entry Time")
     private LocalTime entryTime;
+
+    @DateTimeFormat(pattern = "HH:mm:ss")
     @NotNull(message = "Please Enter Exit Time")
     private LocalTime exitTime;
 }

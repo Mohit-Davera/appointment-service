@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -45,10 +44,8 @@ public class Doctor {
     @Transient
     private String speciality;
 
-    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime entryTime;
 
-    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime exitTime;
 
     @JsonIgnore

@@ -2,58 +2,65 @@ package com.simformsolutions.appointment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.simformsolutions.appointment.dto.speciality.SpecialityTitle;
 import com.simformsolutions.appointment.service.SpecialityService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 
 import static com.simformsolutions.appointment.constants.SpecialityConstants.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc(addFilters = false)
 class SpecialityControllerTest {
 
     static final String BASE_URL = "/speciality";
-    static final SpecialityTitle SPECIALITY_TITLE_DTO = new SpecialityTitle(Arrays.asList(SPECIALITY1, SPECIALITY2, SPECIALITY3));
-    ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+    SpecialityTitle specialityTitle = new SpecialityTitle(Arrays.asList(SPECIALITY1, SPECIALITY2, SPECIALITY3));
+    ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     ObjectWriter objectWriter = objectMapper.writer();
-    @MockBean
-    private SpecialityService specialityService;
-    @Autowired
+
     private MockMvc mockMvc;
+    private final SpecialityService specialityService = mock(SpecialityService.class);
+
+    @BeforeEach
+    public void setup() {
+        this.mockMvc = MockMvcBuilders
+                .standaloneSetup(new SpecialityController(specialityService))
+                .build();
+    }
 
     @Test
     void registerDoctorSuccess() throws Exception {
-        Mockito.when(specialityService.showSpecialities()).thenReturn(SPECIALITY_TITLE_DTO);
+        Mockito.when(specialityService.showSpecialities()).thenReturn(specialityTitle);
         mockMvc.perform(MockMvcRequestBuilders.get(BASE_URL + "/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(objectWriter.writeValueAsString(SPECIALITY_TITLE_DTO)));
+                .andExpect(content().string(objectWriter.writeValueAsString(specialityTitle)));
     }
 
     @Test
     void addSpecialitiesSuccess() throws Exception {
-        Mockito.when(specialityService.saveNewSpecialities(SPECIALITY_TITLE_DTO.getTitles())).thenReturn(SPECIALITY_TITLE_DTO);
-        String content = objectWriter.writeValueAsString(SPECIALITY_TITLE_DTO);
+        Mockito.when(specialityService.saveNewSpecialities(specialityTitle.getTitles())).thenReturn(specialityTitle);
+        String content = objectWriter.writeValueAsString(specialityTitle);
         mockMvc.perform(MockMvcRequestBuilders.post(BASE_URL + "/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(content))
                 .andExpect(status().isOk())
-                .andExpect(content().string(objectWriter.writeValueAsString(SPECIALITY_TITLE_DTO)));
+                .andExpect(content().string(objectWriter.writeValueAsString(specialityTitle)));
     }
 }

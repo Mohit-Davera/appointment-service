@@ -59,7 +59,7 @@ public class AppointmentService {
             availableDoctors.addAll(checkTimingsOfDoctors(userAppointment, doctors));
         }
         if (availableDoctors.isEmpty())
-            throw new DoctorNotAvailableException("No Doctor Available For This Date" + userAppointment.getDate());
+            throw new DoctorNotAvailableException("No Doctor Available For This Date " + userAppointment.getDate());
         availableDoctors.sort(Comparator.comparingInt(AppointmentDoctor::retrieveBookingTimeInHour));
         return availableDoctors;
     }
@@ -67,7 +67,7 @@ public class AppointmentService {
     public AppointmentDoctor saveAppointment(AppointmentDetails appointmentDetails, int userId) {
         Appointment appointment = modelMapper.map(appointmentDetails, Appointment.class);
         Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isEmpty()) throw new UserNotFoundException("User Not Found With This Id" + userId);
+        if (optionalUser.isEmpty()) throw new UserNotFoundException("User Not Found With This Id " + userId);
         String title = appointment.getSpeciality().toLowerCase();
         if (!specialityRepository.existsByTitle(title))
             throw new SpecialityException("Cannot Find This Speciality" + title);
@@ -93,7 +93,8 @@ public class AppointmentService {
     }
 
     public List<AppointmentDoctor> bookAppointmentAgain(Appointment appointment, int userId) {
-        if (!userRepository.existsById(userId)) throw new UserNotFoundException("User Not Found With This Id" + userId);
+        if (!userRepository.existsById(userId))
+            throw new UserNotFoundException("User Not Found With This Id " + userId);
         List<Doctor> doctors = doctorRepository.findDoctorsWithSpeciality(specialityRepository.findByTitle(appointment.getSpeciality()).getSpecialityId());
         List<AppointmentDoctor> availableDoctors = checkSchedule(new ArrayList<>(doctors), appointment);
         int doctorId = appointmentRepository.findDoctorByAppointmentId(appointment.getAppointmentId());
@@ -114,36 +115,39 @@ public class AppointmentService {
     }
 
     private List<AppointmentDoctor> checkTimingsOfDoctors(Appointment userAppointment, List<Doctor> doctors) {
-        AppointmentDoctor appointmentDoctor;
         LocalTime doctorBookedTillTime;
-        LocalDateTime doctorBookedTillDateTime;
-        List<AppointmentDoctor> doctorFreeAfterAppointments = new ArrayList<>();
         LocalTime currentTime = getCurrentLocalTime();
-        LocalDateTime currentDateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        List<AppointmentDoctor> doctorFreeAfterAppointments = new ArrayList<>();
         Predicate<Appointment> sameDateFilter = appointment -> appointment.getDate().equals(userAppointment.getDate());
         Predicate<Appointment> statusFilter = appointment -> appointment.getStatus().equals(AppointmentStatus.BOOKED);
-        for (Doctor d : doctors) {
-            Optional<LocalDateTime> optionalDoctorBookedTillDateTime = d.getAppointments().stream().filter(sameDateFilter.and(statusFilter)).map(
-                    appointment -> LocalDateTime.of(appointment.getDate(), appointment.getEndTime())
-            ).max(LocalDateTime::compareTo);
+        for (Doctor doctor : doctors) {
+            Optional<LocalDateTime> optionalDoctorBookedTillDateTime = doctor.getAppointments().stream().filter(sameDateFilter.and(statusFilter)).map(
+                    appointment -> LocalDateTime.of(appointment.getDate(), appointment.getEndTime())).max(LocalDateTime::compareTo);
             if (optionalDoctorBookedTillDateTime.isEmpty()) {
-                doctorBookedTillTime = userAppointment.getDate().getDayOfMonth() <= LocalDate.now().getDayOfMonth() ? currentTime : d.getEntryTime();
-                appointmentDoctor = new AppointmentDoctor(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(), d.getExperience(), userAppointment.getSpeciality(), (doctorBookedTillTime), userAppointment.getDate());
-                doctorFreeAfterAppointments.add(appointmentDoctor);
-            }
-            if (optionalDoctorBookedTillDateTime.isPresent()) {
-                doctorBookedTillDateTime = optionalDoctorBookedTillDateTime.get();
-                if ((doctorBookedTillDateTime.equals(currentDateTime) || doctorBookedTillDateTime.isBefore(currentDateTime)) && currentDateTime.plusMinutes(60).getHour() + 1 < d.getExitTime().getHour()) {
-                    appointmentDoctor = new AppointmentDoctor(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(), d.getExperience(), userAppointment.getSpeciality(), currentTime, userAppointment.getDate());
-                    doctorFreeAfterAppointments.add(appointmentDoctor);
-                } else if (doctorBookedTillDateTime.isAfter(currentDateTime) && doctorBookedTillDateTime.plusMinutes(60).getHour() + 1 < d.getExitTime().getHour()) {
-                    String pattern = "HH:m";
-                    doctorBookedTillTime = LocalTime.parse(doctorBookedTillDateTime.getHour() + ":" + doctorBookedTillDateTime.getMinute(), DateTimeFormatter.ofPattern(pattern));
-                    appointmentDoctor = new AppointmentDoctor(d.getDoctorId(), d.getFirstName() + " " + d.getLastName(), d.getExperience(), userAppointment.getSpeciality(), doctorBookedTillTime, userAppointment.getDate());
-                    doctorFreeAfterAppointments.add(appointmentDoctor);
-                }
+                doctorBookedTillTime = (userAppointment.getDate().isBefore(LocalDate.now()) || userAppointment.getDate().isEqual(LocalDate.now())) ? currentTime : doctor.getEntryTime();
+                doctorFreeAfterAppointments.add(new AppointmentDoctor(doctor.getDoctorId(), doctor.getFirstName() + " " + doctor.getLastName(), doctor.getExperience(), userAppointment.getSpeciality(), (doctorBookedTillTime), userAppointment.getDate()));
+            } else {
+                Optional<AppointmentDoctor> optionalAppointmentDoctor = checkTimingOfDoctor(doctor, userAppointment, optionalDoctorBookedTillDateTime.get());
+                optionalAppointmentDoctor.ifPresent(doctorFreeAfterAppointments::add);
             }
         }
         return doctorFreeAfterAppointments;
+    }
+
+    Optional<AppointmentDoctor> checkTimingOfDoctor(Doctor doctor, Appointment userAppointment, LocalDateTime doctorBookedTillDateTime) {
+        Optional<AppointmentDoctor> optionalAppointmentDoctor = Optional.empty();
+        LocalTime doctorBookedTillTime;
+        LocalTime currentTime = getCurrentLocalTime();
+        LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime).truncatedTo(ChronoUnit.MINUTES);
+        if ((doctorBookedTillDateTime.equals(currentDateTime) || doctorBookedTillDateTime.isBefore(currentDateTime)) && currentDateTime.plusMinutes(60).getHour() + 1 < doctor.getExitTime().getHour()) {
+            optionalAppointmentDoctor = Optional.of(new AppointmentDoctor(doctor.getDoctorId(), doctor.getFirstName() + " " + doctor.getLastName(), doctor.getExperience(), userAppointment.getSpeciality(), currentTime, userAppointment.getDate()));
+            return optionalAppointmentDoctor;
+        } else if (doctorBookedTillDateTime.isAfter(currentDateTime) && doctorBookedTillDateTime.plusMinutes(60).getHour() <= doctor.getExitTime().getHour()) {
+            String pattern = "HH:m";
+            doctorBookedTillTime = LocalTime.parse(doctorBookedTillDateTime.getHour() + ":" + doctorBookedTillDateTime.getMinute(), DateTimeFormatter.ofPattern(pattern));
+            optionalAppointmentDoctor = Optional.of(new AppointmentDoctor(doctor.getDoctorId(), doctor.getFirstName() + " " + doctor.getLastName(), doctor.getExperience(), userAppointment.getSpeciality(), doctorBookedTillTime, userAppointment.getDate()));
+            return optionalAppointmentDoctor;
+        }
+        return optionalAppointmentDoctor;
     }
 }

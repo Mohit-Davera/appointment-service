@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.*;
 import static com.simformsolutions.appointment.constants.SpecialityConstants.*;
-import static com.simformsolutions.appointment.constants.UserInfoConstants.ZERO_ID;
+import static com.simformsolutions.appointment.constants.UserInformationConstants.ZERO_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
@@ -25,11 +25,11 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class SpecialityServiceTest {
 
-    static final Doctor DOCTOR_WITHOUT_ID = new Doctor(ZERO_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, EMAIL, CITY, DEGREE, COLLEGE_NAME, EXPERIENCE, SPECIALITY1,
+    Doctor doctorWithoutId = new Doctor(ZERO_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, EMAIL, CITY, DEGREE, COLLEGE_NAME, EXPERIENCE, SPECIALITY1,
             ENTRY_TIME,
             EXIT_TIME, null);
 
-    static final SpecialityTitle SPECIALITY_TITLE_DTO = new SpecialityTitle(new ArrayList<>(Arrays.asList(SPECIALITY1, SPECIALITY2, SPECIALITY3)));
+    SpecialityTitle specialityTitle = new SpecialityTitle(new ArrayList<>(Arrays.asList(SPECIALITY1, SPECIALITY2, SPECIALITY3)));
 
     private final SpecialityRepository specialityRepository = mock(SpecialityRepository.class);
     private final SpecialityService specialityService = new SpecialityService(specialityRepository);
@@ -37,7 +37,7 @@ class SpecialityServiceTest {
     @Test
     void showSpecialitiesSuccess() {
         Mockito.when(specialityRepository.findAll()).thenReturn(getSpecialities(true));
-        assertEquals(SPECIALITY_TITLE_DTO.getTitles(), specialityService.showSpecialities().getTitles());
+        assertEquals(specialityTitle.getTitles(), specialityService.showSpecialities().getTitles());
     }
 
     @Test
@@ -48,9 +48,9 @@ class SpecialityServiceTest {
     }
 
     List<Speciality> getSpecialities(boolean hasId) {
-        Speciality speciality1 = new Speciality(SPECIALITY1, new ArrayList<>(List.of(DOCTOR_WITHOUT_ID)));
-        Speciality speciality2 = new Speciality(SPECIALITY2, new ArrayList<>(List.of(DOCTOR_WITHOUT_ID)));
-        Speciality speciality3 = new Speciality(SPECIALITY3, new ArrayList<>(List.of(DOCTOR_WITHOUT_ID)));
+        Speciality speciality1 = new Speciality(SPECIALITY1, new ArrayList<>(List.of(doctorWithoutId)));
+        Speciality speciality2 = new Speciality(SPECIALITY2, new ArrayList<>(List.of(doctorWithoutId)));
+        Speciality speciality3 = new Speciality(SPECIALITY3, new ArrayList<>(List.of(doctorWithoutId)));
         if (hasId) {
             speciality1.setSpecialityId(SPECIALITY_ID1);
             speciality2.setSpecialityId(SPECIALITY_ID2);

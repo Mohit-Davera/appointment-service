@@ -26,6 +26,7 @@ public class User {
     private String number;
 
     private String password;
+
     @JsonIgnore
     @OneToMany(targetEntity = Appointment.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "userId", referencedColumnName = "userId")

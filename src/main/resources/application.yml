@@ -8,10 +8,20 @@ spring:
     defer-datasource-initialization: true
     show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 420870389064-lkbnr0achv0l0og3tddgh23vgr2sakqa.apps.googleusercontent.com
+            clientSecret: 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
+            scope:
+              - email
+              - profile
 server:
   port: 8080
   error:
