@@ -33,7 +33,7 @@ import static com.simformsolutions.appointment.constants.AppointmentDoctorDetail
 import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.DOCTOR_ID;
 import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.EXPERIENCE;
 import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY1;
-import static com.simformsolutions.appointment.constants.UserInformationConstants.*;
+import static com.simformsolutions.appointment.constants.UserInfoConstants.*;
 import static com.simformsolutions.appointment.enums.AppointmentStatus.AVAILABLE;
 import static com.simformsolutions.appointment.enums.AppointmentStatus.CANCELLED;
 import static org.junit.jupiter.api.Assertions.assertEquals;

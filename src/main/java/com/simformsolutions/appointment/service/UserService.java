@@ -5,19 +5,17 @@ import com.simformsolutions.appointment.dto.AppointmentDoctor;
 import com.simformsolutions.appointment.dto.appointment.AppointmentDetails;
 import com.simformsolutions.appointment.dto.user.UserInformation;
 import com.simformsolutions.appointment.enums.AppointmentStatus;
+import com.simformsolutions.appointment.enums.Provider;
 import com.simformsolutions.appointment.excepetion.AppointmentNotFoundException;
 import com.simformsolutions.appointment.excepetion.ScheduleNotFoundException;
 import com.simformsolutions.appointment.excepetion.StatusChangeException;
-import com.simformsolutions.appointment.model.Appointment;
-import com.simformsolutions.appointment.model.Doctor;
-import com.simformsolutions.appointment.model.Schedule;
-import com.simformsolutions.appointment.model.User;
-import com.simformsolutions.appointment.repository.AppointmentRepository;
-import com.simformsolutions.appointment.repository.DoctorRepository;
-import com.simformsolutions.appointment.repository.ScheduleRepository;
-import com.simformsolutions.appointment.repository.UserRepository;
+import com.simformsolutions.appointment.model.*;
+import com.simformsolutions.appointment.repository.*;
+import com.simformsolutions.appointment.service.oauth.CustomOAuth2User;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,9 +32,13 @@ public class UserService {
     private final AppointmentDoctorDtoConverter appointmentDoctorDtoConverter;
     private final AppointmentRepository appointmentRepository;
     private final ScheduleRepository scheduleRepository;
+    private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
+    @Autowired
+    private PasswordEncoder bCryptPasswordEncoder;
 
-    public UserService(UserRepository userRepository, DoctorRepository doctorRepository, AppointmentService appointmentService, AppointmentDoctorDtoConverter appointmentDoctorDtoConverter, AppointmentRepository appointmentRepository, ScheduleRepository scheduleRepository, ModelMapper modelMapper) {
+
+    public UserService(UserRepository userRepository, DoctorRepository doctorRepository, AppointmentService appointmentService, AppointmentDoctorDtoConverter appointmentDoctorDtoConverter, AppointmentRepository appointmentRepository, ScheduleRepository scheduleRepository, ModelMapper modelMapper, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.doctorRepository = doctorRepository;
         this.appointmentService = appointmentService;
@@ -44,6 +46,7 @@ public class UserService {
         this.appointmentRepository = appointmentRepository;
         this.scheduleRepository = scheduleRepository;
         this.modelMapper = modelMapper;
+        this.roleRepository = roleRepository;
     }
 
     public List<AppointmentDoctor> getAppointments(int userId) {
@@ -52,8 +55,15 @@ public class UserService {
 
     public UserInformation addUser(UserInformation userInformation) {
         try {
+            Optional<Role> optionalRole = roleRepository.findById(1);
+            userInformation.setPassword(bCryptPasswordEncoder.encode(userInformation.getPassword()));
+            userInformation.setEnabled(true);
+            if (optionalRole.isPresent()) {
+                optionalRole.get().addRoleDetail(new RoleDetails(userInformation.getEmail()));
+                roleRepository.save(optionalRole.get());
+            }
             userInformation.setUserId(userRepository.save(modelMapper.map(userInformation, User.class)).getUserId());
-        } catch (Exception ex) {
+        } catch (DataIntegrityViolationException exception) {
             throw new DataIntegrityViolationException("This Email Already Exists " + userInformation.getEmail());
         }
         return userInformation;
@@ -125,6 +135,20 @@ public class UserService {
             return appointmentDoctor;
         } else {
             throw new ScheduleNotFoundException("Cannot Find Schedule With This Appointment Id" + appointmentDoctor.getDoctorId());
+        }
+
+    }
+
+    public void processOAuthPostLogin(CustomOAuth2User customOAuth2User) {
+        Optional<User> existUser = userRepository.findByEmail(customOAuth2User.getEmail());
+        if (existUser.isEmpty()) {
+            User newUser = new User();
+            newUser.setName(customOAuth2User.getName());
+            newUser.setEmail(customOAuth2User.getEmail());
+            newUser.setProvider(Provider.GOOGLE);
+            newUser.setEnabled(true);
+            newUser.setPassword("");
+            userRepository.save(newUser);
         }
 
     }

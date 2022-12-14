@@ -1,10 +1,12 @@
 package com.simformsolutions.appointment.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -25,7 +27,11 @@ public class UserInformation {
     @NotEmpty(message = "Please Enter Number")
     private String number;
 
-    @Size(min = 5, message = "Please Enter Password With More Than 5 Letters")
+    @Transient
+    @JsonIgnore
+    private boolean isEnabled;
+
+    @Size(min = 5, message = "Please Enter Password With More Than  5 Letters")
     @NotEmpty(message = "Please Enter Password")
     private String password;
 

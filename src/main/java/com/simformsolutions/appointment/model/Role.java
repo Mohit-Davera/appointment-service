@@ -25,4 +25,8 @@ public class Role {
     @JoinColumn(name = "roleId", referencedColumnName = "roleId")
     private List<RoleDetails> roleDetails;
 
+    public void addRoleDetail(RoleDetails roleDetails){
+        this.roleDetails.add(roleDetails);
+    }
+
 }
