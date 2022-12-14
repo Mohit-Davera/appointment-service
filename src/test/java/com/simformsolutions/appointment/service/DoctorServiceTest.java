@@ -3,6 +3,8 @@ package com.simformsolutions.appointment.service;
 import com.simformsolutions.appointment.dto.doctor.DoctorDetails;
 import com.simformsolutions.appointment.model.Doctor;
 import com.simformsolutions.appointment.model.Speciality;
+import com.simformsolutions.appointment.repository.DoctorRepository;
+import com.simformsolutions.appointment.repository.RoleRepository;
 import com.simformsolutions.appointment.repository.SpecialityRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +29,12 @@ class DoctorServiceTest {
 
     private final SpecialityRepository specialityRepository = mock(SpecialityRepository.class);
     private final ModelMapper modelMapper = mock(ModelMapper.class);
-    private final DoctorService doctorService = new DoctorService(specialityRepository, modelMapper);
+    private final DoctorRepository doctorRepository = mock(DoctorRepository.class);
+
+    private final RoleRepository roleRepository = mock(RoleRepository.class);
+
+
+    private final DoctorService doctorService = new DoctorService(specialityRepository, modelMapper, doctorRepository, roleRepository);
     DoctorDetails doctorDetails = new DoctorDetails(DOCTOR_ID, FIRST_NAME, LAST_NAME, PHONE_NUMBER, EMAIL, CITY, DEGREE, COLLEGE_NAME, EXPERIENCE, SPECIALITY1,
             ENTRY_TIME,
             EXIT_TIME);

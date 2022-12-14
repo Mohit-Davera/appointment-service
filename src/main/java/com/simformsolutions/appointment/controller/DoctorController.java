@@ -1,11 +1,9 @@
 package com.simformsolutions.appointment.controller;
 
 import com.simformsolutions.appointment.dto.doctor.DoctorDetails;
+import com.simformsolutions.appointment.dto.doctor.DoctorUpdateDetails;
 import com.simformsolutions.appointment.service.DoctorService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 

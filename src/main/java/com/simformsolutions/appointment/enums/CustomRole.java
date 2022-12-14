@@ -1,11 +1,11 @@
 package com.simformsolutions.appointment.enums;
 
-public enum Provider {
-    LOCAL("local"), GOOGLE("google");
+public enum CustomRole {
+    USER("USER"), DOCTOR("DOCTOR"),ADMIN("ADMIN");
 
     public final String label;
 
-    Provider(String label) {
+    CustomRole(String label) {
         this.label = label;
     }
 

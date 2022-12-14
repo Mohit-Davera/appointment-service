@@ -28,7 +28,7 @@ import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.
 import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.EXPERIENCE;
 import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY1;
 import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY_ID1;
-import static com.simformsolutions.appointment.constants.UserInformationConstants.USER_ID;
+import static com.simformsolutions.appointment.constants.UserInfoConstants.USER_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;

@@ -1,9 +1,11 @@
 package com.simformsolutions.appointment.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.simformsolutions.appointment.enums.Provider;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
+@Component
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +29,11 @@ public class User {
     private String number;
 
     private String password;
+
+    private boolean isEnabled;
+
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
 
     @JsonIgnore
     @OneToMany(targetEntity = Appointment.class, cascade = CascadeType.ALL)
@@ -48,4 +56,6 @@ public class User {
     public void addAppointment(Appointment a) {
         this.appointments.add(a);
     }
+
+
 }
