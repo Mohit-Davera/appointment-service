@@ -38,7 +38,7 @@ public class UserService {
     private PasswordEncoder bCryptPasswordEncoder;
 
 
-    public UserService(UserRepository userRepository, DoctorRepository doctorRepository, AppointmentService appointmentService, AppointmentDoctorDtoConverter appointmentDoctorDtoConverter, AppointmentRepository appointmentRepository, ScheduleRepository scheduleRepository, ModelMapper modelMapper, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, DoctorRepository doctorRepository, AppointmentService appointmentService, AppointmentDoctorDtoConverter appointmentDoctorDtoConverter, AppointmentRepository appointmentRepository, ScheduleRepository scheduleRepository, ModelMapper modelMapper,RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.doctorRepository = doctorRepository;
         this.appointmentService = appointmentService;

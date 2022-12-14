@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.*;
 import static com.simformsolutions.appointment.constants.SpecialityConstants.*;
-import static com.simformsolutions.appointment.constants.UserInfoConstants.ZERO_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 

@@ -7,14 +7,8 @@ import com.simformsolutions.appointment.dto.user.UserInformation;
 import com.simformsolutions.appointment.excepetion.AppointmentNotFoundException;
 import com.simformsolutions.appointment.excepetion.ScheduleNotFoundException;
 import com.simformsolutions.appointment.excepetion.StatusChangeException;
-import com.simformsolutions.appointment.model.Appointment;
-import com.simformsolutions.appointment.model.Doctor;
-import com.simformsolutions.appointment.model.Schedule;
-import com.simformsolutions.appointment.model.User;
-import com.simformsolutions.appointment.repository.AppointmentRepository;
-import com.simformsolutions.appointment.repository.DoctorRepository;
-import com.simformsolutions.appointment.repository.ScheduleRepository;
-import com.simformsolutions.appointment.repository.UserRepository;
+import com.simformsolutions.appointment.model.*;
+import com.simformsolutions.appointment.repository.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -30,8 +24,8 @@ import java.util.*;
 
 import static com.simformsolutions.appointment.constants.AppointmentDetailsConstants.*;
 import static com.simformsolutions.appointment.constants.AppointmentDoctorDetailsConstants.*;
-import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.DOCTOR_ID;
-import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.EXPERIENCE;
+import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.*;
+import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.EMAIL;
 import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY1;
 import static com.simformsolutions.appointment.constants.UserInfoConstants.*;
 import static com.simformsolutions.appointment.enums.AppointmentStatus.AVAILABLE;
@@ -53,12 +47,13 @@ class UserServiceTest {
     private final ScheduleRepository scheduleRepository = mock(ScheduleRepository.class);
     private final AppointmentDoctorDtoConverter appointmentDoctorDtoConverter = mock(AppointmentDoctorDtoConverter.class);
     private final AppointmentService appointmentService = mock(AppointmentService.class);
-    UserInformation userInformation = new UserInformation(NAME, EMAIL, NUMBER, PASSWORD);
+    private final RoleRepository roleRepository = mock(RoleRepository.class);
+    UserInformation userInformation = new UserInformation(FULL_NAME, EMAIL, NUMBER, PASSWORD);
     AppointmentDoctor appointmentDoctor1 = new AppointmentDoctor(APPOINTMENT_ID1, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
     AppointmentDetails appointmentDetails = new AppointmentDetails(SPECIALITY1, ISSUE, APPOINTMENT_DATE, PATIENT_NAME);
     AppointmentDoctor appointmentDoctor = new AppointmentDoctor(APPOINTMENT_ID2, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
     List<AppointmentDoctor> listOfAppointmentDoctor = new ArrayList<>(Arrays.asList(appointmentDoctor1, appointmentDoctor));
-    UserService userService = new UserService(userRepository, doctorRepository, appointmentService, appointmentDoctorDtoConverter, appointmentRepository, scheduleRepository, modelMapper);
+    UserService userService = new UserService(userRepository, doctorRepository, appointmentService, appointmentDoctorDtoConverter, appointmentRepository, scheduleRepository, modelMapper,roleRepository);
 
     @Test
     void addUserSuccess() {
@@ -180,8 +175,8 @@ class UserServiceTest {
 
     private User getUserDetails(boolean hasId) {
         if (hasId)
-            return new User(USER_ID, NAME, EMAIL, NUMBER, PASSWORD);
-        return new User(NAME, EMAIL, NUMBER, PASSWORD);
+            return new User(USER_ID, FULL_NAME, EMAIL, NUMBER, PASSWORD);
+        return new User(FULL_NAME, EMAIL, NUMBER, PASSWORD);
     }
 
     private List<Tuple> getListTuple() {

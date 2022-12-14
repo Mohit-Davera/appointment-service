@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.simformsolutions.appointment.constants.UserInfoConstants;
 import com.simformsolutions.appointment.dto.AppointmentDoctor;
 import com.simformsolutions.appointment.dto.user.UserInformation;
 import com.simformsolutions.appointment.enums.AppointmentStatus;
@@ -27,6 +28,7 @@ import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.
 import static com.simformsolutions.appointment.constants.DoctorDetailsConstants.EXPERIENCE;
 import static com.simformsolutions.appointment.constants.SpecialityConstants.SPECIALITY1;
 import static com.simformsolutions.appointment.constants.UserInfoConstants.*;
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.PASSWORD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,7 +40,7 @@ class UserControllerTest {
     static final AppointmentDoctor APPOINTMENT_DOCTOR_DTO1 = new AppointmentDoctor(APPOINTMENT_ID1, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
     static final AppointmentDoctor APPOINTMENT_DOCTOR_DTO2 = new AppointmentDoctor(APPOINTMENT_ID2, DOCTOR_ID, DOCTOR_NAME, EXPERIENCE, SPECIALITY1, BOOKING_TIME, BOOKING_DATE, BOOKED_STATUS);
     static final List<AppointmentDoctor> APPOINTMENT_DOCTOR_DTOS = new ArrayList<>(Arrays.asList(APPOINTMENT_DOCTOR_DTO1, APPOINTMENT_DOCTOR_DTO2));
-    static final UserInformation USER_DETAILS_DTO = new UserInformation(NAME, EMAIL, NUMBER, PASSWORD);
+    static final UserInformation USER_DETAILS_DTO = new UserInformation(FULL_NAME, EMAIL, NUMBER, PASSWORD);
     ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     ObjectWriter objectWriter = objectMapper.writer();
     @Autowired

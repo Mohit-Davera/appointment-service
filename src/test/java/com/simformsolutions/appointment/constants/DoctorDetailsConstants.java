@@ -16,4 +16,6 @@ public final class DoctorDetailsConstants {
     public static final LocalTime ENTRY_TIME = LocalTime.parse("10:00", DateTimeFormatter.ofPattern("HH:mm"));
     public static final LocalTime EXIT_TIME = LocalTime.parse("21:00", DateTimeFormatter.ofPattern("HH:mm"));
 
+    public static final int ZERO_ID = 0;
+
 }
