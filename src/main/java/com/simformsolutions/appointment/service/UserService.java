@@ -11,6 +11,7 @@ import com.simformsolutions.appointment.excepetion.ScheduleNotFoundException;
 import com.simformsolutions.appointment.excepetion.StatusChangeException;
 import com.simformsolutions.appointment.model.*;
 import com.simformsolutions.appointment.repository.*;
+import com.simformsolutions.appointment.service.oauth.CryptoPrincipal;
 import com.simformsolutions.appointment.service.oauth.CustomOAuth2User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,5 +152,21 @@ public class UserService {
             userRepository.save(newUser);
         }
 
+    }
+    public void processOAuthPostLogin(CryptoPrincipal cryptoPrincipal) {
+        Optional<User> existUser = userRepository.findByEmail(cryptoPrincipal.getEmail());
+        if (existUser.isEmpty()) {
+            User newUser = new User();
+            newUser.setName(cryptoPrincipal.getFullName());
+            newUser.setEmail(cryptoPrincipal.getEmail());
+            newUser.setProvider(Provider.KEYCLOAK);
+            newUser.setEnabled(true);
+            newUser.setPassword("");
+            userRepository.save(newUser);
+        }
+    }
+
+    public boolean checkIfExists(String email){
+       return userRepository.existsByEmail(email);
     }
 }

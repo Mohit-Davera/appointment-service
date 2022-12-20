@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ *  doctor service
+ *
+ */
 @Service
 public class DoctorService {
 
@@ -33,7 +37,13 @@ public class DoctorService {
         this.roleRepository = roleRepository;
     }
 
-    //POST
+    /**
+     *
+     *
+     * @param doctorDetails doctorDetails
+     * @return {@link DoctorDetails}
+     * @see DoctorDetails
+     */
     public DoctorDetails saveDoctor(DoctorDetails doctorDetails) {
         Doctor doctor = modelMapper.map(doctorDetails, Doctor.class);
         Speciality s = specialityRepository.findByTitle(doctor.getSpeciality());
