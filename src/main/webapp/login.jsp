@@ -34,6 +34,7 @@
 					<a href="/oauth2/authorization/google" class="social-login__icon fab fa-google"></a>
 					<a href="/oauth2/authorization/github" class="social-login__icon fab fa-github"></a>
 					<a href="/oauth2/authorization/facebook" class="social-login__icon fab fa-facebook"></a>
+					<a href="/oauth2/authorization/poc-client" class="fa-key "></a>
 				</div>
 			</div>
 		</div>
